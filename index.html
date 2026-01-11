@@ -31,8 +31,15 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .fc-event { border: none !important; padding: 2px 4px; border-radius: 4px !important; cursor: pointer; }
         .fc-event-title { font-weight: 700 !important; font-size: 0.7rem !important; }
-        .finance-summary-card { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: white; }
-        .completed-summary-card { background: linear-gradient(135deg, #475569 0%, #1e293b 100%); color: white; }
+
+        /* SEÇİLİ KART STİLLERİ */
+        .active-status-card {
+            border: 2px solid #6366f1 !important;
+            ring: 4px;
+            ring-color: #indigo-200;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+        }
 
         @keyframes pulse-red {
             0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
@@ -80,13 +87,13 @@
             <hr class="border-slate-100">
 
             <div class="space-y-3">
-                <div id="card-devam" class="relative group p-4 bg-emerald-50 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all" onclick="toggleStatusFilter('devam')">
+                <div id="card-devam" class="relative group p-4 bg-emerald-50 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all duration-300" onclick="toggleStatusFilter('devam')">
                     <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">DEVAM EDEN</span>
                     <div id="active-count-display" class="text-xl font-black text-emerald-700 mt-1">0 Adet</div>
                     <button onclick="event.stopPropagation(); showTutarModal('devam')" class="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-sm hover:bg-emerald-600 hover:text-white transition-all text-emerald-600">👁</button>
                 </div>
 
-                <div id="card-tamam" class="relative group p-4 bg-slate-100 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all" onclick="toggleStatusFilter('tamam')">
+                <div id="card-tamam" class="relative group p-4 bg-slate-100 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all duration-300" onclick="toggleStatusFilter('tamam')">
                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TAMAMLANAN</span>
                     <div id="completed-count-display" class="text-xl font-black text-slate-700 mt-1">0 Adet</div>
                     <button onclick="event.stopPropagation(); showTutarModal('tamam')" class="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-sm hover:bg-slate-800 hover:text-white transition-all text-slate-600">👁</button>
@@ -147,6 +154,7 @@
     let currentStatusFilter = null;
     const today = new Date(); today.setHours(0,0,0,0);
 
+    // Veri İşleme ve Takvim Fonksiyonları
     function temizleTutar(deger) {
         if (typeof deger === 'number') return deger;
         if (!deger) return 0;
@@ -173,7 +181,6 @@
             const isComp = new Date(item['Parti Son Teslim Tarihi']) < today;
             const eventColor = getUniqueColor(item['İKN']);
             return {
-                // AJANDA GÖRÜNÜMÜNE İKN EKLENDİ
                 title: `${item['Parti No']}.P | ${item['Yüklenici Firma']} | ${item['İhale Adı']} [İKN: ${item['İKN']}]`,
                 start: item['Parti Son Teslim Tarihi'],
                 backgroundColor: eventColor,
@@ -201,12 +208,6 @@
         processData();
         updateFilterOptions();
     });
-
-    function prepareAndPrint() {
-        const scrollers = document.querySelectorAll('.fc-scroller');
-        scrollers.forEach(s => { s.style.height = 'auto'; s.style.overflow = 'visible'; });
-        window.print();
-    }
 
     function processData() {
         groupedData = {};
@@ -245,8 +246,26 @@
 
     function handleFirmaChange() { updateFilterOptions(); calendar.refetchEvents(); }
     function handleIhaleChange() { calendar.refetchEvents(); }
+
+    // GÖRSEL SEÇİM EKLENMİŞ FİLTRE FONKSİYONU
     function toggleStatusFilter(status) {
-        if (currentStatusFilter === status) { currentStatusFilter = null; } else { currentStatusFilter = status; }
+        const devCard = document.getElementById('card-devam');
+        const tamCard = document.getElementById('card-tamam');
+
+        if (currentStatusFilter === status) {
+            currentStatusFilter = null;
+            devCard.classList.remove('active-status-card');
+            tamCard.classList.remove('active-status-card');
+        } else {
+            currentStatusFilter = status;
+            if (status === 'devam') {
+                devCard.classList.add('active-status-card');
+                tamCard.classList.remove('active-status-card');
+            } else {
+                tamCard.classList.add('active-status-card');
+                devCard.classList.remove('active-status-card');
+            }
+        }
         updateFilterOptions();
         calendar.refetchEvents();
     }
@@ -257,6 +276,7 @@
         document.getElementById('completed-count-display').innerText = c + " İhale";
     }
 
+    // Modal ve Liste Fonksiyonları
     function showPartyDetailModal(p) {
         document.getElementById('modal-container').style.setProperty('display', 'flex', 'important');
         document.getElementById('modal-back-btn').classList.add('hidden');
@@ -279,8 +299,8 @@
                     </div>
                     <div class="p-6 ${isLate ? 'delay-pulse' : 'bg-emerald-50 border-emerald-100'} rounded-3xl border col-span-2 flex justify-between items-center">
                         <p class="font-black uppercase">${p['Parti Son Teslim Tarihi']}</p>
-                        <span class="px-4 py-1 ${isLate ? 'bg-white/20 text-white' : 'bg-emerald-200 text-emerald-900'} text-[10px] font-bold rounded-full uppercase">
-                            ${isLate ? 'Parti Teslim Süresi Geçti' : 'Parti teslim zamanı'}
+                        <span class="px-4 py-1 ${isLate ? 'bg-white/20 text-white' : 'bg-emerald-200 text-emerald-800'} text-[10px] font-bold rounded-full uppercase">
+                            ${isLate ? 'Süre Geçti' : 'Parti teslim zamanı'}
                         </span>
                     </div>
                 </div>
@@ -300,10 +320,11 @@
 
         const selectedFirma = document.getElementById('firma-filter').value;
         let list = Object.values(groupedData).filter(g => {
-        const statusMatch = g.durum === currentStatusFilter;
-        const firmaMatch = !selectedFirma || g.firma === selectedFirma;
-        return statusMatch && firmaMatch;
+            const statusMatch = g.durum === currentStatusFilter;
+            const firmaMatch = !selectedFirma || g.firma === selectedFirma;
+            return statusMatch && firmaMatch;
         }).sort((a,b) => a.ad.localeCompare(b.ad,'tr'));
+
         let tT = 0, aT = 0, aD = {}, yD = {}; monthlyDetails = {};
 
         list.forEach(item => {
@@ -328,7 +349,7 @@
         });
 
         let h = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div class="p-6 ${isD ? 'finance-summary-card' : 'completed-summary-card'} rounded-3xl text-center">
+            <div class="p-6 ${isD ? 'bg-indigo-600' : 'bg-slate-800'} rounded-3xl text-white text-center">
                 <p class="text-[10px] font-black opacity-70 mb-1">Toplam Hacim</p>
                 <p class="text-3xl font-black">${formatPara(tT)}</p>
             </div>
@@ -380,6 +401,11 @@
 
     function closeModal() { document.getElementById('modal-container').style.setProperty('display', 'none', 'important'); }
     function resetAll() { location.reload(); }
+    function prepareAndPrint() {
+        const scrollers = document.querySelectorAll('.fc-scroller');
+        scrollers.forEach(s => { s.style.height = 'auto'; s.style.overflow = 'visible'; });
+        window.print();
+    }
 </script>
 
 </body>

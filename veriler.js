@@ -686,45 +686,5 @@ const ihaleVerileri = [
         "Parti No": 3,
         "Parti Son Teslim Tarihi": "2025-12-03",
         "Parti Tutarı": 633750
-    },
-    {
-        "İKN": "2026/100200300",
-        "Yüklenici Firma": "Mustafa Halil Mekanik",
-        "İhale Adı": "Turbo Jet Motor Temini",
-        "Parti No": 1,
-        "Parti Son Teslim Tarihi": "2026-02-10",
-        "Parti Tutarı": 50000000
-    },
-    {
-        "İKN": "2026/100200300",
-        "Yüklenici Firma": "Mustafa Halil Mekanik",
-        "İhale Adı": "Turbo Jet Motor Temini",
-        "Parti No": 2,
-        "Parti Son Teslim Tarihi": "2026-03-12",
-        "Parti Tutarı": 50000000
-    },
-    {
-        "İKN": "2026/100200300",
-        "Yüklenici Firma": "Mustafa Halil Mekanik",
-        "İhale Adı": "Turbo Jet Motor Temini",
-        "Parti No": 3,
-        "Parti Son Teslim Tarihi": "2026-04-11",
-        "Parti Tutarı": 50000000
-    },
-    {
-        "İKN": "2026/100200300",
-        "Yüklenici Firma": "Mustafa Halil Mekanik",
-        "İhale Adı": "Turbo Jet Motor Temini",
-        "Parti No": 4,
-        "Parti Son Teslim Tarihi": "2026-05-11",
-        "Parti Tutarı": 50000000
-    },
-    {
-        "İKN": "2026/100200300",
-        "Yüklenici Firma": "Mustafa Halil Mekanik",
-        "İhale Adı": "Turbo Jet Motor Temini",
-        "Parti No": 5,
-        "Parti Son Teslim Tarihi": "2026-06-10",
-        "Parti Tutarı": 50000000
     }
 ];

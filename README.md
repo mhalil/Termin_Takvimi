@@ -10,7 +10,7 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 ![SS_01.png](img/SS_01.png)
 
 * Takvim uygulaması (index.html) çalıştırıldığında, üzerindeki tüm veriyi aynı dizindeki **veriler.js isimli JSON**  dosyasından alıyor/okuyor.
-* Takvim üzerindeki bilgilerden birine tıklandığında açılır pencere içinde İhaleye ait detaylar görüntüleniyor. Örneğin 2 Ocaktaki işe tıkladığımızda aşağıdaki pencere açılıyor. Bugün 10 Ocak olduğu için tıkladığımız termin bilgisi kırmızı arkaplan rengi ile gösteriliyor ve "PARTİ TESLİM SÜRESİ GEÇTİ" bilgisi yazıyor.
+* Takvim üzerindeki bilgilerden birine tıklandığında açılır pencere içinde İhaleye ait detaylar görüntüleniyor. Örneğin 2 Ocak'taki işe tıkladığımızda aşağıdaki pencere açılıyor. Bugün 10 Ocak olduğu için tıkladığımız termin bilgisi kırmızı arkaplan rengi ile gösteriliyor ve "**PARTİ TESLİM SÜRESİ GEÇTİ**" bilgisi yazıyor.
 
 ![SS_02.png](img/SS_02.png)
 
@@ -18,7 +18,7 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_03.png](img/SS_03.png)
 
-* Takvimde ileri tarihli bir işe/partiye ait bilgiye tıklarsak (örneğin 24 Ocak) açılan PARTİ BİLGİSİ penceresinde "PARTİ TESLİM ZAMANI" yazısını ve arkaplanın yeşil olduğunu görürsünüz. 
+* Takvimde ileri tarihli bir işe/partiye ait bilgiye tıklarsak (örneğin 24 Ocak) açılan PARTİ BİLGİSİ penceresinde "**PARTİ TESLİM ZAMANI**" yazısını ve arkaplanın yeşil olduğunu görürsünüz. 
 
 ![SS_04.png](img/SS_04.png)
 
@@ -62,15 +62,15 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_14.png](img/SS_14.png)
 
-* **İHALE BAZLI** açılır menüsünde de sadece seçili firmaya ait işler listelendi.
+* **İHALE BAZLI** açılır menüsünde de sadece **seçili firmaya ait** işler listelendi.
 
 ![SS_15.png](img/SS_15.png)
 
-* **FİRMA BAZLI** açılır menüsünden seçim yaptıktan sonra **DEVAM EDEN** bilgi kartına tıkladığımızda, sadece seçili firmaya ait devam eden işlerin detay bilgileri görüntülenir.
+* **FİRMA BAZLI** açılır menüsünden seçim yaptıktan sonra **DEVAM EDEN** bilgi kartının yanındaki **GÖZ** 👁 simgesine tıkladığımızda, sadece seçili firmaya ait devam eden işlerin detay bilgileri görüntülenir.
 
 ![SS_16.png](img/SS_16.png)
 
-* Doğal olarak, **FİRMA BAZLI** açılır menüsünden seçim yapılmış iken **TAMAMLANAN** bilgi kartına tıkladığımızda da, sadece seçili firmaya ait tamamlanan işlerin detay bilgileri görüntülenir. Tamamlanan iş yoksa aşağıdaki gibi bilgi ile karşılaşırsınız.
+* Doğal olarak, **FİRMA BAZLI** açılır menüsünden seçim yapılmış iken **TAMAMLANAN** bilgi kartının yanındaki **GÖZ** 👁 simgesine tıkladığımızda da, sadece seçili firmaya ait tamamlanan işlerin detay bilgileri görüntülenir. Tamamlanan iş yoksa aşağıdaki gibi bilgi ile karşılaşırsınız.
 
 ![SS_17.png](img/SS_17.png)
 
@@ -78,11 +78,11 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_18.png](img/SS_18.png)
 
-* **DEVAM EDEN** işlerinin detaylarını inceleyelim. 
+* **DEVAM EDEN** bilgi kartının yanındaki **GÖZ** 👁 simgesine tıklayarak detaylarını inceleyelim. 
 
 ![SS_19.png](img/SS_19.png)
 
-* Aynı firmanın **TAMAMLANAN** İşlerinin detaylarını inceleyelim.
+* Aynı firmanın **TAMAMLANAN** İşlerinin detaylarını bilgi kartının yanındaki **GÖZ** 👁 simgesine tıklayarak inceleyelim.
 
 ![SS_20.png](img/SS_20.png)
 
@@ -130,7 +130,7 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_31.png](img/SS_31.png)
 
-* Sayfayı F5 tuşu ile yenilediğimizde, veriler yeniden okunuyor ve yeni eklenen işin uygulamaya dahil olduğunu görüyoruz.
+* Sayfayı **F5** tuşu ile yenilediğimizde, veriler yeniden okunuyor ve yeni eklenen işin uygulamaya dahil olduğunu görüyoruz.
 
 ![SS_32.png](img/SS_32.png)
 
@@ -138,15 +138,15 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_33.png](img/SS_33.png)
 
-* **DEVAM EDEN** bilgi kartının yanındaki **GÖZ** simgesine tıklayarak yeni işin finansal detaylarını görüntülüyoruz.
+* **DEVAM EDEN** bilgi kartının yanındaki **GÖZ** 👁 simgesine tıklayarak yeni işin finansal detaylarını görüntülüyoruz.
 
 ![SS_34.png](img/SS_34.png)
 
-* Firma Filtresi uygulamazsak DEVAM EDEN (AKTİF PROJEKSİYON) işlerin tamamına ait finansal detaylar görüntülenir.
+* Firma Filtresi uygulamazsak **DEVAM EDEN (AKTİF PROJEKSİYON)** işlerin tamamına ait finansal detaylar görüntülenir.
 
 ![SS_35.png](img/SS_35.png)
 
-* Sayfayı aşağı kaydırarak Devam eden işlerin listesini görebiliriz.
+* Sayfayı aşağı kaydırarak Devam Eden İşlerin listesini görebiliriz.
 
 ![SS_36.png](img/SS_36.png)
 
@@ -154,11 +154,11 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_37.png](img/SS_37.png)
 
-* **DEVAM EDEN (AKTİF PROJEKSİYON)** ekranında AY bilgisine tıklanırsa, o ay hangi firmaların kaçıncı partilerine ait ödeme yapılması gerektiğine dair detaylar da görüntülenir.
+* **DEVAM EDEN (AKTİF PROJEKSİYON)** ekranında **AY** bilgi kartına tıklanırsa, o ay hangi firmaların kaçıncı partilerine ait ödeme yapılması gerektiğine dair detaylar da görüntülenir.
 
 ![SS_38.png](img/SS_38.png)
 
-* Aynı özellikler **TAMAMLANAN** işler için de geçerlidir. **TAMAMLANAN** bilgi kartının yanındaki **GÖZ** simgesine tıklayarak, tamamlanan / biten işlerin ihale/iş detayları, toplam ödenen tutarları ve aylık detaylarını görüntüleyebiliriz.
+* Aynı özellikler **TAMAMLANAN** işler için de geçerlidir. **TAMAMLANAN** bilgi kartının yanındaki **GÖZ** 👁 simgesine tıklayarak, tamamlanan / biten işlerin ihale/iş detayları, toplam ödenen tutarları ve aylık detaylarını görüntüleyebiliriz.
 
 ![SS_39.png](img/SS_39.png)
 
