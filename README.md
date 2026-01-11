@@ -126,11 +126,11 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_29.png](img/SS_29.png)
 
-* **VERİLERİ JS OLARAK KAYDET** butonu yardımı ile de yaptığımız değişikliği  kaydetmek istiyoruz.
-
 * Mevcut kayıtlar silinmek istenildiğinde sadece seçilen kaydın ya da seçilen İKN ve Firmaya ait tüm parti bilgilerinin silinmesi sağlanabilir.
 
 ![SS_29.2.png](img/SS_29.2.png)
+
+* **VERİLERİ JS OLARAK KAYDET** butonu yardımı ile de yaptığımız değişikliği  kaydetmek istiyoruz.
 
 ![SS_30.png](img/SS_30.png)
 
