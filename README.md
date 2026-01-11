@@ -118,11 +118,19 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_28.png](img/SS_28.png)
 
+* Kayıt işlemi gerçekleşince bilgi penceresi gösterilir.
+
+![SS_28.2.png](img/SS_28.2.png)
+
 * Sayfanın altına geldiğimizde yeni işe ait bilgilerin eklendiğini görüyoruz.
 
 ![SS_29.png](img/SS_29.png)
 
 * **VERİLERİ JS OLARAK KAYDET** butonu yardımı ile de yaptığımız değişikliği  kaydetmek istiyoruz.
+
+* Mevcut kayıtlar silinmek istenildiğinde sadece seçilen kaydın ya da seçilen İKN ve Firmaya ait tüm parti bilgilerinin silinmesi sağlanabilir.
+
+![SS_29.2.png](img/SS_29.2.png)
 
 ![SS_30.png](img/SS_30.png)
 
