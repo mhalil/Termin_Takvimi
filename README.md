@@ -30,7 +30,7 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_06.png](img/SS_06.png)
 
-* Ya da Sol Ok tuşu ile geri gidip Şubat Ayı verilerini **AJANDA** görünümünde görebiliriz.
+* Ya da Sol Ok tuşu ile geri gidip Şubat Ayı verilerini **AJANDA** görünümünde liste halinde görebiliriz.
 
 ![SS_07.png](img/SS_07.png)
 
@@ -42,99 +42,126 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 ![SS_09.png](img/SS_09.png)
 
-* Takvimin **AY** görünümüne geçerek **BUGÜN** butonuna basıyor ve ay içindeki işleri / partileri görüyoruz.
+* Takvimin **AY** görünümüne geçerek **BUGÜN** butonuna basıyor ve ay içindeki işleri / partileri görüyoruz. Sol Kısımdaki "**TAMAMLANAN**" bilgi kartına tıkladığımızda, Ocak ayında tamamlanan iş olmadığı için tüm takvim boş kalıyor.
 
 ![SS_10.png](img/SS_10.png)
 
-* Sol Kısımdaki "**TAMAMLANAN**" bilgi kartına tıkladığımızda, takvim üzerinde sadece tamamlanan işlere ait bilgiler görüntülenir. 
+* **SOL OK** tuşu ile **Kasım** ayına geldiğimizde **DEVAM EDEN** ve **TAMAMLANAN** tüm işleri, takvim üzerinde görüyoruz. 
 
 ![SS_11.png](img/SS_11.png)
 
-* Geri Ok butonu ile **KASIM** ayına gidildiğinde tamamlanan işlere ait bilgiler görüntülenebilir. xxxxxxxxxxx burada kaldım ama tam bitmedi, kontrol et, düzenle
+* Sol kısımdan **DEVAM EDEN** bilgi kartına tıklayınca, Takvimde sadece Kasım ayında devam eden işler gösterilir. Biten işle gizlenir. 
 
 ![SS_12.png](img/SS_12.png)
 
-* Takvim 
+* Sol kısımdaki **FİRMA BAZLI** listesinden bir firma seçilirse, hem  **İHALE BAZLI** listesinde hem de takvim içerisinde sadece seçilen Firmaya ait işler listelenir / gösterilir.
 
 ![SS_13.png](img/SS_13.png)
 
-* **Yüklenici Firma** açılır
+* **FİRMA BAZLI** açılır menüsünden seçim yaptık ve takvim içeriğinde sadece seçili işe ait bilgiler gösterildi.
 
 ![SS_14.png](img/SS_14.png)
 
-* **İhale Adı** açılır menir.
+* **İHALE BAZLI** açılır menüsünde de sadece seçili firmaya ait işler listelendi.
 
 ![SS_15.png](img/SS_15.png)
 
-* Yüklenen CSV düzenleyebilirsiniz.
+* **FİRMA BAZLI** açılır menüsünden seçim yaptıktan sonra **DEVAM EDEN** bilgi kartına tıkladığımızda, sadece seçili firmaya ait devam eden işlerin detay bilgileri görüntülenir.
 
 ![SS_16.png](img/SS_16.png)
 
-* Takvimde gös basmalısınız. 
+* Doğal olarak, **FİRMA BAZLI** açılır menüsünden seçim yapılmış iken **TAMAMLANAN** bilgi kartına tıkladığımızda da, sadece seçili firmaya ait tamamlanan işlerin detay bilgileri görüntülenir. Tamamlanan iş yoksa aşağıdaki gibi bilgi ile karşılaşırsınız.
 
 ![SS_17.png](img/SS_17.png)
 
-* İhale adının ymamlanıyor. 
+* **FİRMA BAZLI** listesinden yeni bir firma seçelim takvimde, diğer işler gizlendi.
 
 ![SS_18.png](img/SS_18.png)
 
-* Kayıtrak görüntüleniyor. 
+* **DEVAM EDEN** işlerinin detaylarını inceleyelim. 
 
 ![SS_19.png](img/SS_19.png)
 
-* aciklama
-  ![SS_20.png](img/SS_20.png)
+* Aynı firmanın **TAMAMLANAN** İşlerinin detaylarını inceleyelim.
 
-* aciklama
-  ![SS_21.png](img/SS_21.png)
+![SS_20.png](img/SS_20.png)
 
-* aciklama
-  ![SS_22.png](img/SS_22.png)
+* **AY** görünümünden farklı olarak **AJANDA** görünümünde, aylık iş/parti bilgileri liste şeklinde görüntülenebilir.
 
-* aciklama
-  ![SS_23.png](img/SS_23.png)
+![SS_21.png](img/SS_21.png)
 
-* aciklama
-  ![SS_24.png](img/SS_24.png)
+* **AY** görünümünde olduğu gibi **AJANDA** görünümünde de tüm işler ya da **FİRMA BAZLI** menüsünden seçim yapılarak bir firmaya ait işler filtrelenebilir/ görüntülenebilir.
 
-* aciklama
-  ![SS_25.png](img/SS_25.png)
+![SS_22.png](img/SS_22.png)
 
-* aciklama
-  ![SS_26.png](img/SS_26.png)
+* Takvim uygulamasının güzel ve kullanışlı bir özelliği de yeni İhale bilgileri ekleme ya da mevcut ihale bilgilerini Düzenlemeye / Silmeye imkan tanımasıdır. Sol kısımda bulunan **DÜZENLE / EKLE** butonuna basarak düzenleme sayfasını görüntüleyebiliriz.
 
-* aciklama
-  ![SS_27.png](img/SS_27.png)
+![SS_23.png](img/SS_23.png)
 
-* aciklama
-  ![SS_28.png](img/SS_28.png)
+* **Dosya Seç** butonu yardımı ile mevcut ihale bilgilerinin bulunduğu dosyayı seçelim.
 
-* aciklama
-  ![SS_29.png](img/SS_29.png)
+![SS_24.png](img/SS_24.png)
 
-* aciklama
-  ![SS_30.png](img/SS_30.png)
+* Gördüğünüz gibi **JSON (.js)** dosyası yüklendi. Artık mevcut veriler üzerinde değişiklik yapabiliriz.
 
-* aciklama
-  ![SS_31.png](img/SS_31.png)
+![SS_25.png](img/SS_25.png)
 
-* aciklama
-  ![SS_32.png](img/SS_32.png)
+* Sayfanın en altına gelip son ihaleye ait bilgilere bakıyoruz. 
 
-* aciklama
-  ![SS_33.png](img/SS_33.png)
+![SS_26.png](img/SS_26.png)
 
-* aciklama
-  ![SS_34.png](img/SS_34.png)
+* Yeni işe ait bilgileri yazarak, uygulamanın,  otomatik olarak kayıt oluşturmasını sağlıyoruz. 
 
-* aciklama
-  ![SS_35.png](img/SS_35.png)
+![SS_27.png](img/SS_27.png)
 
-* aciklama
-  ![SS_36.png](img/SS_36.png)
+* Yeni işe ait bilgileri yazıp, **SİHİRBAZI ÇALIŞTIR** butonuna basarak uygulamanın, bizim için belirttiğimiz parti sayısı kadar kayıt oluşturmasını sağlıyoruz. Yazılan Sözleşme Tutarı, parti sayısına bölünerek, parti tutarları eşit olacak şekilde oluşturuluyor. İsterseniz sonrasında değerleri değiştirebilirsiniz.
 
-* aciklama
-  ![SS_37.png](img/SS_37.png)
+![SS_28.png](img/SS_28.png)
 
-* aciklama
-  ![SS_38.png](img/SS_38.png)
+* Sayfanın altına geldiğimizde yeni işe ait bilgilerin eklendiğini görüyoruz.
+
+![SS_29.png](img/SS_29.png)
+
+* **VERİLERİ JS OLARAK KAYDET** butonu yardımı ile de yaptığımız değişikliği  kaydetmek istiyoruz.
+
+![SS_30.png](img/SS_30.png)
+
+* Takvim uygulaması verileri **VERİLER.JS** dosyasından okuduğu için değişikliği aynı dosyanın üzerine kaydediyoruz.
+
+![SS_31.png](img/SS_31.png)
+
+* Sayfayı F5 tuşu ile yenilediğimizde, veriler yeniden okunuyor ve yeni eklenen işin uygulamaya dahil olduğunu görüyoruz.
+
+![SS_32.png](img/SS_32.png)
+
+* **FİRMA BAZLI** listesinde yeni işi seçip takvime filtre uyguluyoruz.
+
+![SS_33.png](img/SS_33.png)
+
+* **DEVAM EDEN** bilgi kartının yanındaki **GÖZ** simgesine tıklayarak yeni işin finansal detaylarını görüntülüyoruz.
+
+![SS_34.png](img/SS_34.png)
+
+* Firma Filtresi uygulamazsak DEVAM EDEN (AKTİF PROJEKSİYON) işlerin tamamına ait finansal detaylar görüntülenir.
+
+![SS_35.png](img/SS_35.png)
+
+* Sayfayı aşağı kaydırarak Devam eden işlerin listesini görebiliriz.
+
+![SS_36.png](img/SS_36.png)
+
+* Herhangi bir işe tıkladığımızda işe ait detaylar görüntülenir.
+
+![SS_37.png](img/SS_37.png)
+
+* **DEVAM EDEN (AKTİF PROJEKSİYON)** ekranında AY bilgisine tıklanırsa, o ay hangi firmaların kaçıncı partilerine ait ödeme yapılması gerektiğine dair detaylar da görüntülenir.
+
+![SS_38.png](img/SS_38.png)
+
+* Aynı özellikler **TAMAMLANAN** işler için de geçerlidir. **TAMAMLANAN** bilgi kartının yanındaki **GÖZ** simgesine tıklayarak, tamamlanan / biten işlerin ihale/iş detayları, toplam ödenen tutarları ve aylık detaylarını görüntüleyebiliriz.
+
+![SS_39.png](img/SS_39.png)
+
+* İstenilen **AY** kartına tıklayarak, o ay hangi firmaların hangi işlerinin kaçıncı partisine dair ödeme yapıldığını görebiliriz. 
+
+![SS_40.png](img/SS_40.png)
