@@ -2,1168 +2,385 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Termin Takvimi (Gelişmiş)</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termin & Finans Yönetim Paneli</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/tr.js'></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-<style>
-    /* Yazı Tipi ve Arka Plan */
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        background-color: #f8f9fa; 
-        display: flex;
-        min-height: 100vh;
-        justify-content: center;
-        align-items: flex-start;
-    }
-    
-    /* Sayfa Genişliği: %90 ve YUKARI KAYDIRMA */
-    .page-content-wrapper {
-        max-width: 90%; 
-        width: 100%;
-        margin: 10px auto; 
-    }
+    <script src="veriler.js"></script>
 
-    /* Başlık stili */
-    h2.text-center { 
-        color: #0d6efd; 
-        margin-bottom: 15px !important; 
-        font-size: 1.75rem; 
-    }
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .sidebar { width: 22%; min-width: 300px; max-width: 400px; }
+        #calendar { background: white; padding: 1.5rem; border-radius: 1.5rem; height: calc(100vh - 40px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+        .fc-header-toolbar { margin-bottom: 1.5rem !important; }
+        .fc-toolbar-chunk:nth-child(1), .fc-toolbar-chunk:nth-child(2) { display: none; }
+        .fc-list-event-time { display: none !important; }
+        .fc-button-primary {
+            background-color: #f1f5f9 !important; border: none !important; color: #475569 !important;
+            font-weight: bold !important; font-size: 0.7rem !important; border-radius: 0.5rem !important;
+        }
+        .fc-button-active { background-color: #6366f1 !important; color: white !important; }
+        .modal-overlay { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none !important; position: fixed; inset: 0; z-index: 100; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .fc-event { border: none !important; padding: 2px 4px; border-radius: 4px !important; cursor: pointer; }
+        .fc-event-title { font-weight: 700 !important; font-size: 0.7rem !important; }
+        .finance-summary-card { background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: white; }
+        .completed-summary-card { background: linear-gradient(135deg, #475569 0%, #1e293b 100%); color: white; }
 
-    /* Takvim ve Filtreler için arka plan */
-    #calendar {
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
-    }
-    
-    /* ------------------------------------------------------------------ */
-    /* TAKVİM STİLLERİ */
-    /* ------------------------------------------------------------------ */
+        @keyframes pulse-red {
+            0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .delay-pulse { animation: pulse-red 2s infinite; background-color: #ef4444 !important; color: white !important; }
 
-    /* Takvim Gün Başlıkları */
-    .fc-col-header-cell-cushion {
-        text-decoration: none !important; 
-        color: black !important;
-        font-weight: bold !important;
-    }
+        .print-btn {
+            position: absolute; top: 1.25rem; right: 8.5rem; z-index: 50;
+            background: #ef4444; color: white; padding: 0.5rem 1rem;
+            border-radius: 0.75rem; font-size: 0.7rem; font-weight: 800;
+            display: none; align-items: center; gap: 0.5rem; transition: all 0.2s;
+        }
 
-    /* Hafta Sonu Gün Başlıkları ve Hücreleri */
-    .fc-day-sat .fc-col-header-cell-cushion,
-    .fc-day-sun .fc-col-header-cell-cushion {
-        color: #6C5353 !important; /* Koyu Kırmızı Metin */
-    }
-    
-    .fc-day-sat,
-    .fc-day-sun {
-        background-color: #ece6e6 !important; /* Açık Kırmızı Arka Plan */
-    }
-    
-    /* Hafta Sonu Rakamları */
-    .fc-day-sat a,
-    .fc-day-sun a {
-        color: #6C5353 !important; 
-        font-weight: bold;
-    }
-    
-    /* ------------------------------------------------------------------ */
-
-    /* Modal Stili */
-    #modal-description strong {
-        display: inline-block;
-        width: 150px;
-    }
-    
-    /* Takvim Boşken Gösterilecek Mesaj Alanı */
-    #initial-message-container {
-        position: absolute; 
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.95); 
-        z-index: 10; 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 50px;
-        border-radius: 8px;
-    }
-    
-    #initial-message-container p {
-        font-size: 1.25rem;
-        color: #6c757d;
-    }
-
-    /* YÜKLEME ALANI STİLİ */
-    .upload-area {
-        border: 1px solid #dee2e6 !important;
-        transition: all 0.3s ease;
-    }
-
-    /* Özet Kartları Stili */
-    .summary-card {
-        background-color: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 10px;
-        margin-top: 15px; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        text-align: center;
-        min-height: 80px;
-    }
-    .summary-card h6 {
-        font-size: 0.8rem;
-        color: #6c757d;
-        margin-bottom: 5px;
-        font-weight: 600;
-    }
-    .summary-card .count {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #0d6efd;
-        display: block;
-    }
-    .summary-card.past .count {
-        color: #dc3545;
-    }
-    .summary-card.future .count {
-        color: #198754;
-    }
-</style>
-
+        @media print {
+            @page { size: portrait; margin: 0; }
+            html, body { height: auto !important; overflow: visible !important; background: white !important; }
+            .sidebar, .fc-header-toolbar, .fc-button, .print-btn, #monthly-detail-container button { display: none !important; }
+            main { position: static !important; width: 100% !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; }
+            #calendar { border: none !important; box-shadow: none !important; height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; }
+            .fc-scroller, .fc-scroller-harness { height: auto !important; overflow: visible !important; position: static !important; }
+            .fc-list-table { width: 100% !important; border: 1px solid #eee !important; table-layout: auto !important; }
+            .fc-view-harness { height: auto !important; }
+        }
+    </style>
 </head>
-<body>
+<body class="flex h-screen overflow-hidden">
 
-    <div class="page-content-wrapper">
-        
-        <h2 class="mt-2 mb-3 text-center text-primary">Termin Takvimi</h2>
-        
-        <div id="upload-area" class="p-3 rounded mb-4 bg-light d-flex align-items-center justify-content-start upload-area">
-            <label for="file-input" class="form-label mb-0 fw-bold me-3">Yeni CSV Dosyasını Yükle:</label>
-            <input type="file" id="file-input" accept=".csv" class="form-control form-control-sm w-auto" />
+    <aside class="sidebar bg-white border-r border-slate-200 flex flex-col z-30 shadow-2xl">
+        <div class="p-6 bg-slate-900 text-white text-center">
+            <h1 class="font-extrabold text-2xl tracking-tighter italic">TERMİN TAKİP <span class="text-indigo-400">TAKVİMİ</span></h1>
         </div>
 
-        <div class="row">
-            <div class="col-md-3 mb-4">
-                
-                <div class="p-3 border rounded bg-light">
-                    <h5 class="mb-3 text-primary">Termin Filtreleri</h5>
-
-                    <div class="form-check form-switch mb-3 pt-2 border-top">
-                        <input class="form-check-input" type="checkbox" id="hide-completed-toggle" checked>
-                        <label class="form-check-label fw-bold" for="hide-completed-toggle">
-                            Tamamlanmış İşleri Gizle
-                        </label>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="ihale-filter" class="form-label fw-bold">İhale Adı:</label>
-                        <select id="ihale-filter" class="form-select form-select-sm" disabled>
-                            <option value="all">Tüm İhaleler</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="firma-filter" class="form-label fw-bold">Yüklenici Firma:</label>
-                        <select id="firma-filter" class="form-select form-select-sm" disabled>
-                            <option value="all">Tüm Firmalar</option>
-                        </select>
-                    </div>
-                    
-                    <button id="show-remaining-btn" class="btn btn-sm btn-info w-100 mt-2 text-white" style="display: none;" data-bs-toggle="modal" data-bs-target="#remainingTerminModal">
-                        Kalan Termin Detaylarını Göster (0 İhale)
-                    </button>
-                    
-                    <button id="show-completed-btn" class="btn btn-sm btn-warning w-100 mt-2 text-dark" style="display: none;" data-bs-toggle="modal" data-bs-target="#completedProjectsModal">
-                        Tamamlanmış İşleri Göster (0 İhale)
-                    </button>
-                    
-                    <button id="clear-filters-btn" class="btn btn-sm btn-outline-secondary w-100 mt-2" disabled>
-                        Filtreleri Temizle
-                    </button>
+        <div class="p-5 flex-1 space-y-5 overflow-y-auto custom-scrollbar flex flex-col">
+            <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                    <button onclick="calendar.today()" class="flex-1 py-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg text-l font-bold transition-all shadow-sm">BUGÜN</button>
+                    <button onclick="calendar.prev()" class="p-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg shadow-sm">◀</button>
+                    <button onclick="calendar.next()" class="p-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg shadow-sm">▶</button>
                 </div>
-                
-                <div id="summary-panel" style="display: none;">
-                    <div class="p-3 border rounded mt-3 bg-white">
-                        <h5 class="mb-3 text-secondary border-bottom pb-2">Genel Özet</h5>
-                        
-                        <div class="row g-2">
-                            <div class="col-12">
-                                <div class="summary-card">
-                                    <h6 class="text-primary">Gösterilen Toplam İhale Sayısı</h6>
-                                    <span id="summary-ihale-count" class="count">0</span>
-                                </div>
-                            </div>
-                            
-                            <div class="col-6">
-                                <div class="summary-card past">
-                                    <h6 class="text-danger">Kabul Edilen Parti (Geçmiş)</h6>
-                                    <span id="summary-past-count" class="count">0</span>
-                                </div>
-                            </div>
-                            
-                            <div class="col-6">
-                                <div class="summary-card future">
-                                    <h6 class="text-success">Bekleyen Parti (Gelecek)</h6>
-                                    <span id="summary-future-count" class="count">0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-3">
-                    <button class="btn btn-secondary w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#config-panel-collapse" aria-expanded="false" aria-controls="config-panel-collapse">
-                        ⚙️ CSV Sütun Yapılandırması (Ayarları Göster/Gizle)
-                    </button>
-                    <div class="collapse" id="config-panel-collapse">
-                        <div id="config-panel" class="p-3 border rounded-bottom bg-white">
-                            <p class="text-muted small">CSV dosyasındaki sütun sırasına göre ayarları yapın (0'dan başlar).</p>
-                            
-                            <div id="column-config-list" class="row g-2">
-                                <div class="col-6">
-                                    <label for="config-IKN" class="form-label small fw-bold mb-1">IKN (0)</label>
-                                    <input type="number" id="config-IKN" class="form-control form-control-sm" min="0" value="0">
-                                </div>
-                                <div class="col-6">
-                                    <label for="config-FIRMA" class="form-label small fw-bold mb-1">Yüklenici Firma (1)</label>
-                                    <input type="number" id="config-FIRMA" class="form-control form-control-sm" min="0" value="1">
-                                </div>
-                                <div class="col-6">
-                                    <label for="config-IHALE" class="form-label small fw-bold mb-1">İhale Adı (2)</label>
-                                    <input type="number" id="config-IHALE" class="form-control form-control-sm" min="0" value="2">
-                                </div>
-                                <div class="col-6">
-                                    <label for="config-PARTI_NO" class="form-label small fw-bold mb-1">Parti No (3)</label>
-                                    <input type="number" id="config-PARTI_NO" class="form-control form-control-sm" min="0" value="3">
-                                </div>
-                                <div class="col-6">
-                                    <label for="config-TARIH" class="form-label small fw-bold mb-1">Tarih (4)</label>
-                                    <input type="number" id="config-TARIH" class="form-control form-control-sm" min="0" value="4">
-                                </div>
-                                <div class="col-6">
-                                    <label for="config-TUTAR" class="form-label small fw-bold mb-1">Parti Tutarı (5)</label>
-                                    <input type="number" id="config-TUTAR" class="form-control form-control-sm" min="0" value="5">
-                                </div>
-                            </div>
-                            
-                            <div class="mt-3">
-                                <label for="config-DELIMITER" class="form-label small fw-bold mb-1">CSV Ayıracı (Delimiter)</label>
-                                <select id="config-DELIMITER" class="form-select form-select-sm">
-                                    <option value=";">Noktalı Virgül (;)</option>
-                                    <option value=",">Virgül (,)</option>
-                                    <option value="\t">Tab</option>
-                                    <option value="|">Dikey Çizgi (|)</option>
-                                    <option value="">Otomatik (Boş Bırak)</option>
-                                </select>
-                                <p class="text-muted small mt-1">Sık kullanılanlar: Noktalı Virgül (Excel/TR), Virgül (Genel/US).</p>
-                            </div>
-                            
-                            <button id="save-config-btn" class="btn btn-sm btn-success w-100 mt-3">
-                                Ayarları Kaydet ve Kullan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mt-3">
-                    <button class="btn btn-primary w-100 text-start" type="button" data-bs-toggle="collapse" data-bs-target="#color-settings-collapse" aria-expanded="false" aria-controls="color-settings-collapse">
-                        🎨 İhale Renkleri (Ayarları Göster/Gizle)
-                    </button>
-                    <div class="collapse" id="color-settings-collapse">
-                        <div id="color-settings-panel" class="p-3 border rounded-bottom bg-white">
-                            <div id="ihale-color-list">
-                                <p class="text-muted small">Lütfen önce bir CSV dosyası yükleyin.</p>
-                            </div>
-                            <button id="save-colors-btn" class="btn btn-sm btn-primary w-100 mt-3" style="display: none;">
-                                Renkleri Kaydet ve Uygula
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-
+                <div id="calendar-title-display" class="text-center font-bold text-indigo-600 text-[24px] uppercase tracking-widest"></div>
             </div>
 
-            <div class="col-md-9">
-                <div id='calendar' style="position: relative;">
-                    <div id="initial-message-container">
-                        <div>
-                            <p class="mb-3"><span class="h1 text-primary">🗓️</span></p>
-                            <h2>Lütfen Başlamak İçin Bir CSV Dosyası Yükleyin</h2>
-                            <p class="lead text-muted">Takvim verileri göstermek için hazır.</p>
-                            <p class="text-secondary mt-4">Termin/Parti detaylarını takvimde görmek için yukarıdaki **"Yeni CSV Dosyasını Yükle"** alanını kullanın.</p>
-                        </div>
-                    </div>
+            <hr class="border-slate-100">
+
+            <div class="space-y-3">
+                <div id="card-devam" class="relative group p-4 bg-emerald-50 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all" onclick="toggleStatusFilter('devam')">
+                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">DEVAM EDEN</span>
+                    <div id="active-count-display" class="text-xl font-black text-emerald-700 mt-1">0 Adet</div>
+                    <button onclick="event.stopPropagation(); showTutarModal('devam')" class="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-sm hover:bg-emerald-600 hover:text-white transition-all text-emerald-600">👁</button>
+                </div>
+
+                <div id="card-tamam" class="relative group p-4 bg-slate-100 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all" onclick="toggleStatusFilter('tamam')">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TAMAMLANAN</span>
+                    <div id="completed-count-display" class="text-xl font-black text-slate-700 mt-1">0 Adet</div>
+                    <button onclick="event.stopPropagation(); showTutarModal('tamam')" class="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-sm hover:bg-slate-800 hover:text-white transition-all text-slate-600">👁</button>
                 </div>
             </div>
-        </div>
-        
-    </div>
-    
-    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title" id="eventDetailModalLabel">Parti Detayları</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
-          </div>
-          <div class="modal-body">
-            <div id="modal-description"></div>
-            
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="modal fade" id="remainingTerminModal" tabindex="-1" aria-labelledby="remainingTerminModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header bg-info text-white">
-            <h5 class="modal-title" id="remainingTerminModalLabel">Kalan Termin Özetleri</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
-          </div>
-          <div class="modal-body">
-            <div id="remaining-termin-details">
-              </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="modal fade" id="completedProjectsModal" tabindex="-1" aria-labelledby="completedProjectsModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-warning text-dark">
-            <h5 class="modal-title" id="completedProjectsModalLabel">✅ Tamamlanmış İşler (Süresi Dolan İhaleler)</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-          </div>
-          <div class="modal-body">
-            <div id="completed-projects-details">
+            <hr class="border-slate-100">
+
+            <div class="space-y-4 flex-1">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Firma Bazlı</label>
+                    <select id="firma-filter" onchange="handleFirmaChange()" class="w-full rounded-xl border-slate-200 bg-slate-50 text-xs p-3 outline-none border focus:ring-2 focus:ring-indigo-500 transition-all"></select>
                 </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="modal fade" id="completedProjectDetailsModal" tabindex="-1" aria-labelledby="completedProjectDetailsModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title" id="completedProjectDetailsModalLabel">İhale Detayları</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
-          </div>
-          <div class="modal-body">
-            <div id="completed-project-details-content">
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">İhale Bazlı</label>
+                    <select id="ihale-filter" onchange="handleIhaleChange()" class="w-full rounded-xl border-slate-200 bg-slate-50 text-xs p-3 outline-none border focus:ring-2 focus:ring-indigo-500 transition-all"></select>
                 </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" id="backToProjectListBtn" class="btn btn-primary" data-bs-dismiss="modal">
-                <i class="bi bi-arrow-left"></i> Geri Dön
-            </button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
-          </div>
+            </div>
+
+            <div class="space-y-2 mt-auto">
+                <button onclick="window.open('edit.html', '_blank')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[12px] font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+                    📥 VERİ DÜZENLE / EKLE
+                </button>
+                <button onclick="resetAll()" class="w-full py-3 bg-slate-800 hover:bg-red-600 text-white rounded-xl text-[12px] font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+                    🔄 FİLTRELERİ SIFIRLA
+                </button>
+            </div>
         </div>
-      </div>
+    </aside>
+
+    <main class="flex-1 p-5 overflow-hidden bg-slate-50 relative">
+        <button id="pdf-print-btn" onclick="prepareAndPrint()" class="print-btn shadow-lg">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            PDF / YAZDIR
+        </button>
+        <div id="calendar"></div>
+    </main>
+
+    <div id="modal-container" class="modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div class="flex items-center gap-4">
+                    <button id="modal-back-btn" onclick="showListView()" class="hidden px-3 py-1 bg-white shadow-sm border rounded-xl font-bold text-indigo-600 text-sm">⬅ Geri</button>
+                    <h2 id="modal-title" class="font-extrabold text-slate-800 text-lg uppercase tracking-tight"></h2>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-4xl font-light leading-none">&times;</button>
+            </div>
+            <div id="modal-content" class="flex-1 overflow-y-auto p-8 custom-scrollbar"></div>
+        </div>
     </div>
 
+<script>
+    let calendar;
+    let allEvents = [];
+    let groupedData = {};
+    let monthlyDetails = {};
+    const colorMap = {};
+    let currentStatusFilter = null;
+    const today = new Date(); today.setHours(0,0,0,0);
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    function temizleTutar(deger) {
+        if (typeof deger === 'number') return deger;
+        if (!deger) return 0;
+        let temiz = deger.toString().replace(/\./g, '').replace(',', '.');
+        return parseFloat(temiz) || 0;
+    }
 
-    <script>
-        let calendar;
-        let eventDetailModal; 
-        let completedProjectDetailsModal; 
-        let completedProjectsModalInstance;
-        let remainingTerminModalInstance; 
-        let allEvents = []; 
-        
-        // --- Sabitler ve Global Değişkenler ---
-        
-        const COLOR_PALETTE = [
-            '#0d6efd', '#dc3545', '#ffc107', '#198754', '#6f42c1',
-            '#fd7e14', '#20c997', '#6c757d', '#d63384'
-        ];
-        const COLOR_STORAGE_KEY = 'ihaleCustomColors';
-        const CONFIG_STORAGE_KEY = 'csvColumnConfig'; 
-        const DELIMITER_STORAGE_KEY = 'csvDelimiter';
+    function formatPara(sayi) {
+        return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(sayi) + "&nbsp;TL";
+    }
 
-        const colorMap = new Map();
-        let colorIndex = 0;
-        let completedProjectNames = new Set(); 
-        window.remainingTerminData = new Map(); 
-        
-        // BAŞLANGIÇ SÜTUN İNDEKS DEĞERLERİ
-        let COLUMN_INDICES = {
-            IKN: 0,
-            FIRMA: 1,
-            IHALE: 2,
-            PARTI_NO: 3,
-            TARIH: 4,
-            TUTAR: 5 // Parti Tutarı
-        };
-        let CSV_DELIMITER = ';'; 
-
-        // ----------------------------------------------------
-        // Yardımcı Fonksiyon: Türk Lirası String'ini Sayıya Çevirme (Hesaplama için)
-        // ----------------------------------------------------
-        function convertToNumeric(amountString) {
-            if (amountString === undefined || amountString === null) return 0;
-            let s = String(amountString).trim();
-            
-            // 1. TL, KDV, boşluk gibi gereksiz karakterleri temizle. Sadece rakam, nokta ve virgül kalsın.
-            s = s.replace(/[^\d\.,]/g, ''); 
-            
-            // 2. Binlik ayraç olan noktaları kaldır. (4.268.251,25 -> 4268251,25)
-            // Bu adımı en sona bırakmak, virgülden sonra nokta olmadığından emin olmamızı sağlar.
-            const binlikAyirici = /\d\.\d{3}/; // üç basamaklı grupları ayırması muhtemel nokta
-
-            // Sadece ondalık ayırıcı olan virgülü noktaya çevirirken,
-            // binlik ayırıcı noktaları da temizlememiz gerekiyor.
-            s = s.replace(/\./g, ''); // Tüm noktaları kaldır (binlik ayraçlar)
-            s = s.replace(/,/g, '.'); // Kalan tek virgülü ondalık ayraç noktaya çevir.
-            
-            const numericValue = parseFloat(s);
-            
-            // KULLANICI İÇİN HATA AYIKLAMA ÇIKTISI
-            console.log(`[DEBUG - TUTAR] RAW: "${amountString}" -> CLEANED: "${s}" -> NUMERIC: ${numericValue}`);
-
-            return isNaN(numericValue) ? 0 : numericValue;
+    function getUniqueColor(ikn) {
+        if (!colorMap[ikn]) {
+            const hue = (Object.keys(colorMap).length * 137.5) % 360;
+            colorMap[ikn] = `hsl(${hue}, 70%, 45%)`;
         }
-
-        // ----------------------------------------------------
-        // Yardımcı Fonksiyon: Para Birimi Formatlama (+KDV Eklendi)
-        // ----------------------------------------------------
-        function formatCurrency(amount) {
-            if (amount === undefined || amount === null) return 'N/A';
-            
-            let numericAmount;
-            // Eğer fonksiyonu bir sayı ile çağırırsak (totalAmount gibi) direkt kullanırız.
-            if (typeof amount === 'number') {
-                numericAmount = amount;
-            } else {
-                // Eğer bir string ile çağırırsak (partiTutari gibi) dönüştürürüz.
-                numericAmount = convertToNumeric(amount);
-            }
-            
-            if (isNaN(numericAmount)) return String(amount);
-
-            // + KDV ifadesi eklendi ve 2 ondalık basamak kullanıldı
-            return numericAmount.toLocaleString('tr-TR', { 
-                style: 'currency', 
-                currency: 'TRY', 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2 
-            }) + ' + KDV'; 
-        }
-
-
-        // ----------------------------------------------------
-        // CSV Yapılandırma Yöneticisi 
-        // ----------------------------------------------------
-        
-        function loadConfig() {
-            const storedConfig = JSON.parse(localStorage.getItem(CONFIG_STORAGE_KEY));
-            const storedDelimiter = localStorage.getItem(DELIMITER_STORAGE_KEY);
-
-            if (storedConfig) {
-                COLUMN_INDICES = { ...COLUMN_INDICES, ...storedConfig }; 
-            }
-            
-            // HTML formunu, güncel COLUMN_INDICES'e göre doldur
-            for (const key in COLUMN_INDICES) {
-                const input = document.getElementById(`config-${key}`);
-                if (input) {
-                    input.value = COLUMN_INDICES[key];
-                    const label = input.closest('.col-6, .col-12').querySelector('.form-label');
-                    if(label) {
-                         // Etiket metnindeki indeksi güncelle
-                         const baseText = label.textContent.split('(')[0].trim();
-                         label.textContent = `${baseText} (${COLUMN_INDICES[key]})`;
-                    }
-                }
-            }
-            
-            if (storedDelimiter !== null) {
-                CSV_DELIMITER = storedDelimiter;
-            }
-            const delimiterInput = document.getElementById('config-DELIMITER');
-            if (delimiterInput) {
-                delimiterInput.value = CSV_DELIMITER;
-            }
-        }
-
-        function saveConfig() {
-            const newConfig = {};
-            let isValid = true;
-            
-            for (const key in COLUMN_INDICES) {
-                const input = document.getElementById(`config-${key}`);
-                const value = parseInt(input.value);
-                
-                if (isNaN(value) || value < 0) {
-                    alert(`Hata: '${key}' sütun indeksi geçerli bir sayı olmalıdır.`);
-                    isValid = false;
-                    return;
-                }
-                newConfig[key] = value;
-            }
-            
-            if (!isValid) return;
-
-            const delimiterInput = document.getElementById('config-DELIMITER');
-            if (delimiterInput) {
-                CSV_DELIMITER = delimiterInput.value;
-                localStorage.setItem(DELIMITER_STORAGE_KEY, CSV_DELIMITER);
-            }
-
-            COLUMN_INDICES = newConfig;
-            localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(newConfig));
-            loadConfig(); 
-            
-            alert(`CSV Sütun Ayarları kaydedildi. Yeni Ayıraç: "${CSV_DELIMITER || 'Otomatik'}"`);
-        }
-        
-        // ----------------------------------------------------
-        // Renk Yöneticisi (Kısaltıldı)
-        // ----------------------------------------------------
-        
-        function populateColorSettings() {
-            const listDiv = document.getElementById('ihale-color-list');
-            const saveBtn = document.getElementById('save-colors-btn');
-            listDiv.innerHTML = '';
-            
-            const storedColors = JSON.parse(localStorage.getItem(COLOR_STORAGE_KEY) || '{}');
-
-            if (colorMap.size === 0) {
-                listDiv.innerHTML = '<p class="text-muted small">Yüklenen ihale bulunamadı.</p>';
-                saveBtn.style.display = 'none';
-                return;
-            }
-            
-            saveBtn.style.display = 'block';
-
-            colorMap.forEach((currentColor, ihaleAdi) => {
-                const initialColor = storedColors[ihaleAdi] || currentColor;
-                
-                const item = document.createElement('div');
-                item.className = 'd-flex justify-content-between align-items-center mb-2';
-                item.innerHTML = `
-                    <small class="fw-bold text-truncate me-2" style="max-width: 70%;" title="${ihaleAdi}">${ihaleAdi}</small>
-                    <input type="color" class="form-control-sm" data-ihale="${ihaleAdi}" value="${initialColor}" style="width: 50px; height: 30px;">
-                `;
-                listDiv.appendChild(item);
-            });
-        }
-
-        function saveAndApplyColors() {
-            const customColors = {};
-            const colorInputs = document.querySelectorAll('#ihale-color-list input[type="color"]');
-            
-            colorInputs.forEach(input => {
-                const ihaleAdi = input.getAttribute('data-ihale');
-                const newColor = input.value;
-                customColors[ihaleAdi] = newColor;
-                colorMap.set(ihaleAdi, newColor);
-            });
-
-            localStorage.setItem(COLOR_STORAGE_KEY, JSON.stringify(customColors));
-            
-            allEvents.forEach(event => {
-                event.color = colorMap.get(event.extendedProps.ihaleAdi);
-            });
-
-            filterEvents();
-            alert('Renkler kaydedildi ve takvime uygulandı!');
-        }
-        
-        function loadColorsAndApplyToEvents() {
-            const storedColors = JSON.parse(localStorage.getItem(COLOR_STORAGE_KEY) || '{}');
-            
-            for (const ihaleAdi in storedColors) {
-                if (colorMap.has(ihaleAdi)) {
-                    colorMap.set(ihaleAdi, storedColors[ihaleAdi]);
-                }
-            }
-            
-            allEvents.forEach(event => {
-                event.color = colorMap.get(event.extendedProps.ihaleAdi);
-            });
-        }
-
-        // ----------------------------------------------------
-        // Veri Dönüşümü
-        // ----------------------------------------------------
-
-        function convertDataToEvents(data) {
-            const dataRows = data.slice(1);
-            
-            colorMap.clear();
-            colorIndex = 0;
-
-            return dataRows.map((columns, index) => {
-                // Sütun sayısı kontrolü.
-                if (columns.length <= COLUMN_INDICES.TUTAR || columns[COLUMN_INDICES.TARIH] === undefined) {
-                    console.warn(`Satır ${index + 2} atlandı: Yetersiz sütun veya eksik tarih bilgisi.`);
-                    return null;
-                }
-                
-                const ihaleAdi = columns[COLUMN_INDICES.IHALE];
-                const partiTutari = columns[COLUMN_INDICES.TUTAR];
-
-                if (!colorMap.has(ihaleAdi)) {
-                    colorMap.set(ihaleAdi, COLOR_PALETTE[colorIndex % COLOR_PALETTE.length]);
-                    colorIndex++;
-                }
-
-                const tarihKolonu = columns[COLUMN_INDICES.TARIH];
-                const dateParts = tarihKolonu.trim().split('.');
-                if (dateParts.length !== 3) {
-                     return null;
-                }
-                
-                const formattedDate = `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
-                
-                const title = `Parti ${columns[COLUMN_INDICES.PARTI_NO]} - ${ihaleAdi}`;
-                
-                const descriptionHtml = `
-                    <p><strong>Parti Son Teslim Tarihi:</strong> ${dateParts.join('.')}</p>
-                    <p><strong>Parti No:</strong> ${columns[COLUMN_INDICES.PARTI_NO]}</p>
-                    <p><strong>Parti Tutarı:</strong> ${formatCurrency(partiTutari)}</p>
-                    <p><strong>İhale Adı:</strong> ${ihaleAdi}</p>
-                    <p><strong>Yüklenici Firma:</strong> ${columns[COLUMN_INDICES.FIRMA]}</p>
-                    <p><strong>İKN:</strong> ${columns[COLUMN_INDICES.IKN]}</p>
-                `;
-
-                return {
-                    id: index + 1,
-                    title: title,
-                    start: formattedDate,
-                    allDay: true,
-                    extendedProps: {
-                        descriptionHtml: descriptionHtml,
-                        ihaleAdi: ihaleAdi,
-                        yukleniciFirma: columns[COLUMN_INDICES.FIRMA],
-                        ihaleIKN: columns[COLUMN_INDICES.IKN], 
-                        partiTutari: partiTutari 
-                    },
-                    color: colorMap.get(ihaleAdi)
-                };
-            }).filter(event => event && event.start && event.title);
-        }
-        
-        // ----------------------------------------------------
-        // Geriye Dönüş ve Detay Görüntüleme Yöneticisi
-        // ----------------------------------------------------
-
-        window.backToProjectList = function(targetModalId) {
-            completedProjectDetailsModal.hide();
-            const targetModal = new bootstrap.Modal(document.getElementById(targetModalId));
-            targetModal.show();
-        };
-
-        // GÜNCEL/GENEL: İhale Detaylarını Gösterir (Hesaplama Düzeltmesi burada)
-        window.showProjectDetails = function(ihaleAdi, fromModalId) {
-            const detailContentDiv = document.getElementById('completed-project-details-content');
-            
-            const previousModal = bootstrap.Modal.getInstance(document.getElementById(fromModalId));
-            if (previousModal) previousModal.hide();
-            
-            const projectEvents = allEvents
-                .filter(event => event.extendedProps.ihaleAdi === ihaleAdi)
-                .sort((a, b) => new Date(a.start) - new Date(b.start)); 
-
-            if (projectEvents.length === 0) {
-                detailContentDiv.innerHTML = '<div class="alert alert-danger">Bu ihaleye ait detay bulunamadı.</div>';
-                completedProjectDetailsModal.show();
-                return;
-            }
-            
-            const firstEvent = projectEvents[0].extendedProps;
-            const ihaleIKN = firstEvent.ihaleIKN || 'Bilgi Yok';
-            const ihaleFirma = firstEvent.yukleniciFirma || 'Bilgi Yok';
-            let totalAmount = 0; // Hata ayıklama için 0 ile başlar
-            
-            const isCompleted = completedProjectNames.has(ihaleAdi);
-            const statusText = isCompleted ? 'Tamamlanmış İhale' : 'Devam Eden İhale';
-            const statusIcon = isCompleted ? '✅' : '⏳';
-            
-            document.getElementById('completedProjectDetailsModalLabel').textContent = `${statusIcon} ${statusText} Detayları: ${ihaleAdi}`;
-            document.getElementById('backToProjectListBtn').setAttribute('onclick', `backToProjectList('${fromModalId}')`);
-
-
-            let htmlContent = `
-                <h4 class="mb-3">${ihaleAdi}</h4>
-                <div class="row mb-4 p-3 bg-light rounded border small">
-                    <div class="col-md-6 mb-1"><strong>Yüklenici Firma:</strong> <span class="fw-bold text-primary">${ihaleFirma}</span></div>
-                    <div class="col-md-6 mb-1"><strong>İKN:</strong> <span class="fw-bold text-primary">${ihaleIKN}</span></div>
-                </div>
-                <h5 class="border-bottom pb-2">Parti Tarihçesi (${projectEvents.length} Parti)</h5>
-                <ul class="list-group list-group-flush">
-            `;
-
-            // 4. Tüm partileri listele ve tutarı topla
-            projectEvents.forEach(event => {
-                const eventDate = new Date(event.start);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0); 
-                
-                const isPast = eventDate < today;
-                const statusBadge = isPast 
-                    ? '<span class="badge bg-danger">TAMAMLANDI</span>' 
-                    : '<span class="badge bg-success">BEKLEYEN</span>';
-                
-                const formattedDate = eventDate.toLocaleDateString('tr-TR');
-                
-                const partiNoMatch = event.title.match(/Parti (.*?) -/);
-                const partiNo = partiNoMatch ? partiNoMatch[1] : 'N/A';
-                
-                // Tutar toplama - KRİTİK DÜZELTME BURADA YAPILDI
-                const numericAmount = convertToNumeric(event.extendedProps.partiTutari);
-                totalAmount += numericAmount; // Hesaplama için doğru sayısal değeri kullan
-                
-                // Tutar gösterimi
-                htmlContent += `
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div class="fw-bold me-auto">Parti No: ${partiNo}</div>
-                        <div class="text-info me-3">${formatCurrency(event.extendedProps.partiTutari)}</div> 
-                        <div>
-                            ${statusBadge}
-                            <span class="ms-2 text-muted">${formattedDate}</span>
-                        </div>
-                    </li>
-                `;
-            });
-            
-            // Total tutar eklendi. totalAmount zaten doğru sayısal değerdir.
-            htmlContent += `
-                <li class="list-group-item d-flex justify-content-between align-items-center bg-warning bg-opacity-25 mt-2">
-                    <div class="fw-bold me-auto">TOPLAM İHALE TUTARI</div>
-                    <div class="fw-bold text-dark">${formatCurrency(totalAmount)}</div>
-                </li>
-            `;
-            
-            htmlContent += '</ul>';
-            detailContentDiv.innerHTML = htmlContent;
-
-            // 5. Detay Modalı göster
-            completedProjectDetailsModal.show();
-        }
-
-        // ----------------------------------------------------
-        // Tamamlanmış İşler Kontrol ve Görüntüleme
-        // ----------------------------------------------------
-        
-        function checkCompletedProjects(events) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0); 
-            
-            const projectCompletionDates = new Map();
-            events.forEach(event => {
-                const ihaleAdi = event.extendedProps.ihaleAdi;
-                const date = new Date(event.start); 
-
-                if (!projectCompletionDates.has(ihaleAdi)) {
-                    projectCompletionDates.set(ihaleAdi, []);
-                }
-                projectCompletionDates.get(ihaleAdi).push(date);
-            });
-
-            const completedProjects = [];
-            completedProjectNames.clear(); 
-
-            projectCompletionDates.forEach((dates, ihaleAdi) => {
-                const lastDate = dates.reduce((max, date) => (date > max ? date : max), dates[0]);
-                
-                if (lastDate < today) {
-                    completedProjects.push({ ihaleAdi, lastDate });
-                    completedProjectNames.add(ihaleAdi); 
-                }
-            });
-
-            updateCompletedProjectsModal(completedProjects);
-        }
-        
-        function updateCompletedProjectsModal(completedProjects) {
-            const showCompletedBtn = document.getElementById('show-completed-btn');
-            const detailDiv = document.getElementById('completed-projects-details');
-            
-            detailDiv.innerHTML = '';
-
-            if (completedProjects.length > 0) {
-                let htmlContent = '<ul class="list-group">';
-                
-                completedProjects.sort((a, b) => a.lastDate - b.lastDate);
-
-                completedProjects.forEach(project => {
-                    const formattedDate = project.lastDate.toLocaleDateString('tr-TR');
-                    const safeIhaleAdi = project.ihaleAdi.replace(/'/g, "\\'"); 
-                    
-                    htmlContent += `
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="#" class="text-truncate text-decoration-none fw-bold text-dark" 
-                               onclick="showProjectDetails('${safeIhaleAdi}', 'completedProjectsModal')" 
-                               title="${project.ihaleAdi}">
-                                ${project.ihaleAdi}
-                            </a>
-                            <span class="badge bg-danger rounded-pill">Son Parti: ${formattedDate}</span>
-                        </li>
-                    `;
-                });
-                
-                htmlContent += '</ul>';
-                detailDiv.innerHTML = htmlContent;
-
-                showCompletedBtn.style.display = 'block';
-                showCompletedBtn.textContent = `Tamamlanmış İşleri Göster (${completedProjects.length} İhale)`;
-            } else {
-                showCompletedBtn.style.display = 'none';
-                detailDiv.innerHTML = '<div class="alert alert-info mb-0">Şu an süresi dolan tamamlanmış bir ihale bulunmamaktadır.</div>';
-            }
-        }
-        
-        // ----------------------------------------------------
-        // Kalan Termin Detayları (Devam Eden İş Listesi)
-        // ----------------------------------------------------
-        function updateRemainingTerminButton(filteredEvents) {
-            const showRemainingBtn = document.getElementById('show-remaining-btn');
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            const futureEvents = filteredEvents.filter(event => {
-                const eventDate = new Date(event.start);
-                return eventDate >= today && !completedProjectNames.has(event.extendedProps.ihaleAdi); // Sadece DEVAM EDENLER
-            });
-            
-            const remainingTerminData = new Map();
-            const uniqueFutureIhales = new Set();
-            
-            futureEvents.forEach(event => {
-                const ihaleAdi = event.extendedProps.ihaleAdi;
-                const date = new Date(event.start);
-
-                if (!remainingTerminData.has(ihaleAdi)) {
-                    remainingTerminData.set(ihaleAdi, { count: 0, nextDate: null, dates: [] });
-                }
-
-                const data = remainingTerminData.get(ihaleAdi);
-                data.count++;
-                data.dates.push(date);
-                
-                if (!data.nextDate || date < data.nextDate) {
-                    data.nextDate = date;
-                }
-                
-                uniqueFutureIhales.add(ihaleAdi);
-            });
-            
-            window.remainingTerminData = remainingTerminData;
-
-            if (uniqueFutureIhales.size > 0) {
-                showRemainingBtn.style.display = 'block';
-                showRemainingBtn.textContent = `Kalan Termin Detaylarını Göster (${uniqueFutureIhales.size} İhale)`;
-                showRemainingBtn.onclick = () => showRemainingTerminDetails(remainingTerminData);
-            } else {
-                showRemainingBtn.style.display = 'none';
-            }
-        }
-        
-        function showRemainingTerminDetails(dataMap) {
-            const detailDiv = document.getElementById('remaining-termin-details');
-            detailDiv.innerHTML = '';
-
-            if (dataMap.size === 0) {
-                detailDiv.innerHTML = '<div class="alert alert-success">Gösterilen filtreler için gelecekte bekleyen termin bulunmamaktadır.</div>';
-                return;
-            }
-
-            let htmlContent = '';
-
-            dataMap.forEach((data, ihaleAdi) => {
-                const sortedDates = data.dates.sort((a, b) => a - b);
-                const formattedDates = sortedDates.map(d => d.toLocaleDateString('tr-TR')).join(', ');
-                const nextDateFormatted = data.nextDate.toLocaleDateString('tr-TR');
-                
-                const safeIhaleAdi = ihaleAdi.replace(/'/g, "\\'");
-                const color = colorMap.get(ihaleAdi) || '#6c757d'; 
-                
-                htmlContent += `
-                    <div class="card mb-3" style="border-left: 5px solid ${color};">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0 fw-bold" style="color: ${color};">${ihaleAdi}</h6>
-                            <a href="#" class="btn btn-sm btn-info text-white" 
-                                onclick="showProjectDetails('${safeIhaleAdi}', 'remainingTerminModal')">
-                                Detayları Görüntüle
-                            </a>
-                        </div>
-                        <div class="card-body py-2">
-                            <p class="mb-1">
-                                <strong>Toplam Kalan Parti:</strong> <span class="badge bg-primary">${data.count}</span>
-                            </p>
-                            <p class="mb-1">
-                                <strong>En Yakın Termin:</strong> <span class="badge bg-success">${nextDateFormatted}</span>
-                            </p>
-                            <p class="small text-muted mt-2 mb-0">
-                                <strong>Tüm Termin Tarihleri:</strong> ${formattedDates}
-                            </p>
-                        </div>
-                    </div>
-                `;
-            });
-
-            detailDiv.innerHTML = htmlContent;
-        }
-
-        // ----------------------------------------------------
-        // Diğer Fonksiyonlar (Kısaltıldı)
-        // ----------------------------------------------------
-
-        function updateSummary(events) {
-            const summaryPanel = document.getElementById('summary-panel');
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            if (events.length === 0) {
-                summaryPanel.style.display = 'none';
-                return;
-            }
-
-            const uniqueIhales = new Set(events.map(e => e.extendedProps.ihaleAdi));
-            
-            let pastEventsCount = 0;
-            let futureEventsCount = 0;
-
-            events.forEach(event => {
-                const eventDate = new Date(event.start);
-                
-                if (eventDate < today) {
-                    pastEventsCount++;
-                } else {
-                    futureEventsCount++;
-                }
-            });
-
-            document.getElementById('summary-ihale-count').textContent = uniqueIhales.size;
-            document.getElementById('summary-past-count').textContent = pastEventsCount;
-            document.getElementById('summary-future-count').textContent = futureEventsCount;
-            
-            summaryPanel.style.display = 'block';
-        }
-
-        function populateDropdown(selectElement, events, property, allText, filterCompleted = false) {
-            const uniqueValues = new Set();
-            selectElement.innerHTML = `<option value="all">${allText}</option>`;
-
-            events.forEach(event => {
-                const ihaleAdi = event.extendedProps.ihaleAdi;
-                
-                if (filterCompleted && property === 'ihaleAdi' && completedProjectNames.has(ihaleAdi)) {
-                    return; 
-                }
-                
-                uniqueValues.add(event.extendedProps[property]);
-            });
-
-            [...uniqueValues].sort().forEach(value => {
-                if (value) {
-                    selectElement.innerHTML += `<option value="${value}">${value}</option>`;
-                }
-            });
-            
-            if (selectElement.querySelector(`option[value="${selectElement.value}"]`) === null) {
-                selectElement.value = 'all'; 
-            }
-        }
-
-        function filterEvents() {
-            if (!calendar || allEvents.length === 0) return;
-
-            const selectedIhales = document.getElementById('ihale-filter').value;
-            const selectedFirma = document.getElementById('firma-filter').value;
-            const hideCompleted = document.getElementById('hide-completed-toggle').checked; 
-
-            const filteredEvents = allEvents.filter(event => {
-                const ihaleAdi = event.extendedProps.ihaleAdi;
-                
-                if (hideCompleted && completedProjectNames.has(ihaleAdi)) {
-                    return false;
-                }
-
-                const ihaleMatch = selectedIhales === 'all' || ihaleAdi === selectedIhales;
-                const firmaMatch = selectedFirma === 'all' || event.extendedProps.yukleniciFirma === selectedFirma;
-                
-                return ihaleMatch && firmaMatch;
-            });
-            
-            calendar.removeAllEvents();
-            calendar.addEventSource(filteredEvents);
-            calendar.refetchEvents();
-            
-            updateSummary(filteredEvents);
-            updateRemainingTerminButton(filteredEvents); 
-        }
-
-        function clearFilters() {
-            document.getElementById('ihale-filter').value = 'all';
-            document.getElementById('firma-filter').value = 'all';
-            document.getElementById('hide-completed-toggle').checked = true;
-
-            populateDropdown(document.getElementById('ihale-filter'), allEvents, 'ihaleAdi', 'Tüm İhaleler', true);
-
-            filterEvents();
-        }
-        
-        function updateUIState(hasEvents) {
-            const ihaleFilter = document.getElementById('ihale-filter');
-            const firmaFilter = document.getElementById('firma-filter');
-            const clearBtn = document.getElementById('clear-filters-btn');
-            const initialMessage = document.getElementById('initial-message-container');
-            const showRemainingBtn = document.getElementById('show-remaining-btn');
-            const showCompletedBtn = document.getElementById('show-completed-btn');
-            
-            ihaleFilter.disabled = !hasEvents;
-            firmaFilter.disabled = !hasEvents;
-            clearBtn.disabled = !hasEvents;
-
-            initialMessage.style.display = hasEvents ? 'none' : 'flex';
-            if (!hasEvents) {
-                showRemainingBtn.style.display = 'none';
-                showCompletedBtn.style.display = 'none';
-            }
-        }
-
-        function initializeCalendar(events) {
-            const calendarEl = document.getElementById('calendar');
-
-            if (calendar) {
-                calendar.removeAllEvents();
-                calendar.addEventSource(events);
-                calendar.refetchEvents();
-                filterEvents(); 
-                return;
-            }
-
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'tr',
-                height: 650, 
-                
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: ''
-                },
-                
-                events: events,
-
-                eventClick: function(info) {
-                    document.getElementById('modal-description').innerHTML = info.event.extendedProps.descriptionHtml;
-                    eventDetailModal.show();
-                },
-                eventColor: '#0d6efd'
-            });
-
-            calendar.render();
-        }
-
-        // ----------------------------------------------------
-        // DOM Hazır
-        // ----------------------------------------------------
-        document.addEventListener('DOMContentLoaded', function() {
-            loadConfig(); 
-
-            // Modal Instance'ları Başlat
-            eventDetailModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
-            completedProjectDetailsModal = new bootstrap.Modal(document.getElementById('completedProjectDetailsModal'));
-            completedProjectsModalInstance = new bootstrap.Modal(document.getElementById('completedProjectsModal'));
-            remainingTerminModalInstance = new bootstrap.Modal(document.getElementById('remainingTerminModal'));
-
-            const fileInput = document.getElementById('file-input');
-            
-            // Olay Dinleyicileri
-            document.getElementById('ihale-filter').addEventListener('change', filterEvents);
-            document.getElementById('firma-filter').addEventListener('change', filterEvents);
-            document.getElementById('clear-filters-btn').addEventListener('click', clearFilters);
-            
-            document.getElementById('hide-completed-toggle').addEventListener('change', () => {
-                if (allEvents.length > 0) {
-                    const hideCompleted = document.getElementById('hide-completed-toggle').checked;
-                    populateDropdown(document.getElementById('ihale-filter'), allEvents, 'ihaleAdi', 'Tüm İhaleler', hideCompleted);
-                }
-                filterEvents(); 
-            });
-            
-            document.getElementById('save-colors-btn').addEventListener('click', saveAndApplyColors);
-            document.getElementById('save-config-btn').addEventListener('click', saveConfig);
-
-
-            fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-
-                Papa.parse(file, {
-                    header: false,
-                    delimiter: ';', /*CSV_DELIMITER, */
-                    dynamicTyping: false,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        const rawData = results.data;
-                        
-                        const validData = rawData.filter((row, index) => index === 0 || row.length > COLUMN_INDICES.TUTAR);
-
-                        const events = convertDataToEvents(validData);
-                        allEvents = events;
-                        
-                        loadColorsAndApplyToEvents(); 
-                        checkCompletedProjects(allEvents); 
-                        
-                        initializeCalendar(allEvents);
-
-                        const hideCompleted = document.getElementById('hide-completed-toggle').checked;
-                        populateDropdown(document.getElementById('ihale-filter'), allEvents, 'ihaleAdi', 'Tüm İhaleler', hideCompleted);
-                        
-                        populateDropdown(document.getElementById('firma-filter'), allEvents, 'yukleniciFirma', 'Tüm Firmalar');
-                        
-                        populateColorSettings(); 
-                        
-                        updateSummary(allEvents);
-                        updateUIState(allEvents.length > 0);
-                        updateRemainingTerminButton(allEvents);
-
-                        console.log(`Başarıyla ${allEvents.length} adet toplam parti/termin yüklendi.`);
-                    },
-                    error: function(error) {
-                        alert('CSV okuma hatası: ' + error.message);
-                    }
-                });
-            });
-            
-            // Başlangıç ayarları
-            initializeCalendar([]);
-            updateUIState(false);
-            updateSummary([]);
-            checkCompletedProjects([]); 
-            updateRemainingTerminButton([]);
+        return colorMap[ikn];
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof ihaleVerileri === 'undefined') return;
+
+        allEvents = ihaleVerileri.map(item => {
+            const isComp = new Date(item['Parti Son Teslim Tarihi']) < today;
+            const eventColor = getUniqueColor(item['İKN']);
+            return {
+                // AJANDA GÖRÜNÜMÜNE İKN EKLENDİ
+                title: `${item['Parti No']}.P | ${item['Yüklenici Firma']} | ${item['İhale Adı']} [İKN: ${item['İKN']}]`,
+                start: item['Parti Son Teslim Tarihi'],
+                backgroundColor: eventColor,
+                borderColor: eventColor,
+                extendedProps: { ...item, isCompleted: isComp }
+            };
         });
-    </script>
+
+        calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+            locale: 'tr',
+            initialView: 'dayGridMonth',
+            headerToolbar: { right: 'dayGridMonth,listMonth' },
+            buttonText: { month: 'Ay', list: 'Ajanda' },
+            height: '100%',
+            events: (info, successCallback) => successCallback(getFilteredEvents()),
+            datesSet: (info) => {
+                document.getElementById('calendar-title-display').innerText = info.view.title;
+                const printBtn = document.getElementById('pdf-print-btn');
+                printBtn.style.display = (info.view.type === 'listMonth') ? 'flex' : 'none';
+            },
+            eventClick: (info) => showPartyDetailModal(info.event.extendedProps)
+        });
+
+        calendar.render();
+        processData();
+        updateFilterOptions();
+    });
+
+    function prepareAndPrint() {
+        const scrollers = document.querySelectorAll('.fc-scroller');
+        scrollers.forEach(s => { s.style.height = 'auto'; s.style.overflow = 'visible'; });
+        window.print();
+    }
+
+    function processData() {
+        groupedData = {};
+        ihaleVerileri.forEach(p => {
+            const key = p['İhale Adı'] + "|" + p['Yüklenici Firma'];
+            if (!groupedData[key]) groupedData[key] = { key, ad: p['İhale Adı'], ikn: p['İKN'], firma: p['Yüklenici Firma'], partiler: [], toplam: 0, durum: 'tamam' };
+            groupedData[key].partiler.push(p);
+            groupedData[key].toplam += temizleTutar(p['Parti Tutarı']);
+            if (new Date(p['Parti Son Teslim Tarihi']) >= today) groupedData[key].durum = 'devam';
+        });
+        updateCounts();
+    }
+
+    function getFilteredEvents() {
+        const iV = document.getElementById('ihale-filter')?.value;
+        const fV = document.getElementById('firma-filter')?.value;
+        return allEvents.filter(e => {
+            const p = e.extendedProps;
+            const key = p['İhale Adı'] + "|" + p['Yüklenici Firma'];
+            const ihaleDurumu = groupedData[key]?.durum;
+            return (!iV || p['İhale Adı'] === iV) && (!fV || p['Yüklenici Firma'] === fV) && (!currentStatusFilter || ihaleDurumu === currentStatusFilter);
+        });
+    }
+
+    function updateFilterOptions() {
+        const fS = document.getElementById('firma-filter'), iS = document.getElementById('ihale-filter');
+        const selF = fS.value, selI = iS.value;
+        const baseData = Object.values(groupedData).filter(item => !currentStatusFilter || item.durum === currentStatusFilter);
+        const firms = [...new Set(baseData.map(x => x.firma))].sort();
+        fS.innerHTML = '<option value="">Tüm Firmalar</option>';
+        firms.forEach(f => { const o = new Option(f,f); if(f === selF) o.selected = true; fS.add(o); });
+        const ihals = [...new Set(baseData.filter(x => !fS.value || x.firma === fS.value).map(x => x.ad))].sort();
+        iS.innerHTML = '<option value="">Tüm İhaleler</option>';
+        ihals.forEach(i => { const o = new Option(i,i); if(i === selI) o.selected = true; iS.add(o); });
+    }
+
+    function handleFirmaChange() { updateFilterOptions(); calendar.refetchEvents(); }
+    function handleIhaleChange() { calendar.refetchEvents(); }
+    function toggleStatusFilter(status) {
+        if (currentStatusFilter === status) { currentStatusFilter = null; } else { currentStatusFilter = status; }
+        updateFilterOptions();
+        calendar.refetchEvents();
+    }
+
+    function updateCounts() {
+        let a = 0, c = 0; Object.values(groupedData).forEach(g => { if (g.durum === 'devam') a++; else c++; });
+        document.getElementById('active-count-display').innerText = a + " İhale";
+        document.getElementById('completed-count-display').innerText = c + " İhale";
+    }
+
+    function showPartyDetailModal(p) {
+        document.getElementById('modal-container').style.setProperty('display', 'flex', 'important');
+        document.getElementById('modal-back-btn').classList.add('hidden');
+        document.getElementById('modal-title').innerText = "📌 PARTİ BİLGİSİ";
+        const isLate = new Date(p['Parti Son Teslim Tarihi']) < today;
+        document.getElementById('modal-content').innerHTML = `
+            <div class="max-w-2xl mx-auto space-y-6">
+                <div class="p-8 bg-slate-900 rounded-[2rem] text-white shadow-2xl relative">
+                    <h2 class="text-2xl font-bold leading-tight">${p['İhale Adı']}</h2>
+                    <p class="text-xs text-indigo-300 mt-2 uppercase">İKN: ${p['İKN']}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-6 bg-slate-50 rounded-3xl text-center border">
+                        <p class="text-[10px] text-slate-400 font-black mb-1">Firma</p>
+                        <p class="font-bold text-slate-800">${p['Yüklenici Firma']}</p>
+                    </div>
+                    <div class="p-6 bg-slate-50 rounded-3xl text-center border">
+                        <p class="text-[10px] text-slate-400 font-black mb-1">Teslimat</p>
+                        <p class="font-bold text-slate-800">${p['Parti No']}. Parti</p>
+                    </div>
+                    <div class="p-6 ${isLate ? 'delay-pulse' : 'bg-emerald-50 border-emerald-100'} rounded-3xl border col-span-2 flex justify-between items-center">
+                        <p class="font-black uppercase">${p['Parti Son Teslim Tarihi']}</p>
+                        <span class="px-4 py-1 ${isLate ? 'bg-white/20 text-white' : 'bg-emerald-200 text-emerald-900'} text-[10px] font-bold rounded-full uppercase">
+                            ${isLate ? 'Parti Teslim Süresi Geçti' : 'Parti teslim zamanı'}
+                        </span>
+                    </div>
+                </div>
+                <div class="p-8 bg-indigo-600 rounded-[2rem] text-white flex justify-between items-center">
+                    <p class="text-3xl font-black">${formatPara(temizleTutar(p['Parti Tutarı']))}</p>
+                    <button onclick="showDetailView('${p['İhale Adı']}|${p['Yüklenici Firma']}')" class="px-4 py-2 bg-white/10 rounded-xl text-xs font-bold border border-white/20">Tümünü Gör</button>
+                </div>
+            </div>`;
+    }
+
+    function showTutarModal(s) { currentStatusFilter = s; document.getElementById('modal-container').style.setProperty('display', 'flex', 'important'); showListView(); }
+
+    function showListView() {
+        document.getElementById('modal-back-btn').classList.add('hidden');
+        const isD = currentStatusFilter === 'devam';
+        document.getElementById('modal-title').innerText = isD ? "💰 AKTİF PROJEKSİYON" : "✅ TAMAMLANAN ANALİZİ";
+
+        const selectedFirma = document.getElementById('firma-filter').value;
+        let list = Object.values(groupedData).filter(g => {
+        const statusMatch = g.durum === currentStatusFilter;
+        const firmaMatch = !selectedFirma || g.firma === selectedFirma;
+        return statusMatch && firmaMatch;
+        }).sort((a,b) => a.ad.localeCompare(b.ad,'tr'));
+        let tT = 0, aT = 0, aD = {}, yD = {}; monthlyDetails = {};
+
+        list.forEach(item => {
+            tT += item.toplam;
+            item.partiler.forEach(p => {
+                const d = new Date(p['Parti Son Teslim Tarihi']), tutar = temizleTutar(p['Parti Tutarı']);
+                if (isD ? (d >= today) : (d < today)) {
+                    aT += tutar;
+                    const ay = d.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
+                    aD[ay] = (aD[ay] || 0) + tutar;
+                    yD[d.getFullYear()] = (yD[d.getFullYear()] || 0) + tutar;
+                    if (!monthlyDetails[ay]) monthlyDetails[ay] = [];
+                    monthlyDetails[ay].push(p);
+                }
+            });
+        });
+
+        const sortedMonths = Object.entries(aD).sort((a,b) => {
+            const months = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+            const [mA, yA] = a[0].split(' '), [mB, yB] = b[0].split(' ');
+            return yA !== yB ? yA - yB : months.indexOf(mA) - months.indexOf(mB);
+        });
+
+        let h = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div class="p-6 ${isD ? 'finance-summary-card' : 'completed-summary-card'} rounded-3xl text-center">
+                <p class="text-[10px] font-black opacity-70 mb-1">Toplam Hacim</p>
+                <p class="text-3xl font-black">${formatPara(tT)}</p>
+            </div>
+            <div class="p-6 bg-white border-2 ${isD ? 'border-indigo-600' : 'border-slate-600'} rounded-3xl text-center">
+                <p class="text-[10px] ${isD?'text-indigo-600':'text-slate-600'} font-black mb-1">${isD?'Kalan':'Ödenen'}</p>
+                <p class="text-3xl font-black">${formatPara(aT)}</p>
+            </div>
+        </div>
+        <div class="mb-8"><div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            ${Object.entries(yD).sort().map(([y,t])=>`<div class="p-4 bg-slate-100 rounded-2xl text-center"><p class="text-[10px] text-slate-500 font-bold">${y}</p><p class="text-lg font-black">${formatPara(t)}</p></div>`).join('')}
+        </div></div>
+        <div class="mb-8"><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            ${sortedMonths.map(([ay,t])=>`<button onclick="showMonthDetail('${ay}')" class="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-2xl text-left hover:bg-indigo-100"><p class="text-[10px] font-bold text-indigo-400">${ay}</p><p class="text-lg font-black text-indigo-700">${formatPara(t)}</p></button>`).join('')}
+        </div></div><div id="monthly-detail-container" class="mb-8 hidden"></div><div class="grid gap-3">`;
+
+        list.forEach(item => {
+            h += `<div onclick="showDetailView('${item.key}')" class="p-5 border rounded-2xl hover:border-indigo-300 transition-all cursor-pointer flex justify-between items-center bg-white">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">${item.ad}</h3>
+                    <p class="text-[10px] text-slate-400 uppercase mt-1 font-black">İKN: ${item.ikn} | ${item.firma}</p>
+                </div>
+                <div class="font-black text-lg ${isD?'text-indigo-600':'text-slate-600'}">${formatPara(item.toplam)}</div>
+            </div>`;
+        });
+        document.getElementById('modal-content').innerHTML = h + `</div>`;
+    }
+
+    function showMonthDetail(ay) {
+        const container = document.getElementById('monthly-detail-container');
+        const partiler = monthlyDetails[ay] || [];
+        container.classList.remove('hidden');
+        let html = `<div class="bg-indigo-600 rounded-3xl p-6 text-white shadow-xl"><div class="flex justify-between mb-4"><h4 class="font-black text-sm uppercase">${ay} Detaylı Liste</h4><button onclick="document.getElementById('monthly-detail-container').classList.add('hidden')" class="font-bold">&times; KAPAT</button></div><div class="bg-white rounded-2xl overflow-hidden text-slate-800"><table class="w-full text-[11px]"><thead class="bg-slate-50 border-b"><tr><th class="p-3 text-left">İhale/Firma</th><th class="p-3">Parti</th><th class="p-3 text-right">Tutar</th></tr></thead><tbody>`;
+        partiler.forEach(p => { html += `<tr class="border-b"><td class="p-3"><b>${p['İhale Adı']}</b><br><small>İKN: ${p['İKN']} - ${p['Yüklenici Firma']}</small></td><td class="p-3 text-center">${p['Parti No']}.P</td><td class="p-3 text-right"><b>${formatPara(temizleTutar(p['Parti Tutarı']))}</b></td></tr>`; });
+        container.innerHTML = html + `</tbody></table></div></div>`;
+        container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showDetailView(key) {
+        const item = groupedData[key]; if(!item) return;
+        document.getElementById('modal-back-btn').classList.remove('hidden');
+        document.getElementById('modal-title').innerText = "İŞ DETAYI";
+        let h = `<div class="space-y-4"><div class="p-6 bg-slate-900 rounded-3xl text-white"><h2 class="font-bold">${item.ad}</h2><p class="text-xs text-indigo-400 mt-1 uppercase font-bold">${item.firma} | İKN: ${item.ikn}</p></div><table class="w-full text-xs text-left"><thead class="bg-slate-50 text-slate-400 border-b"><tr><th class="p-4">PARTİ</th><th class="p-4">TARİH</th><th class="p-4 text-right">TUTAR</th></tr></thead><tbody>`;
+        item.partiler.forEach(p => {
+            const late = new Date(p['Parti Son Teslim Tarihi']) < today && item.durum === 'devam';
+            h += `<tr class="border-b"><td class="p-4 font-bold text-indigo-600">${p['Parti No']}.P</td><td class="p-4 ${late?'text-red-600 font-bold':''}">${p['Parti Son Teslim Tarihi']}</td><td class="p-4 text-right font-black">${formatPara(temizleTutar(p['Parti Tutarı']))}</td></tr>`;
+        });
+        document.getElementById('modal-content').innerHTML = h + `</tbody></table></div>`;
+    }
+
+    function closeModal() { document.getElementById('modal-container').style.setProperty('display', 'none', 'important'); }
+    function resetAll() { location.reload(); }
+</script>
+
 </body>
 </html>

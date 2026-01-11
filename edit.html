@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>İhale Yönetim Paneli - Formatlı</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f4f7f6; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .section-title { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-top: 30px; }
+        .batch-panel { background: #eef2f7; padding: 20px; border-radius: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; border: 1px solid #d1d9e6; }
+        .full-width { grid-column: span 3; }
+        .entry-block { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 8px; background: #fff; position: relative; }
+        .grid-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 3px; }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .tutar-input { font-weight: bold; color: #2c3e50; text-align: right; }
+        .controls { position: sticky; top: 0; background: white; padding: 10px 0; z-index: 100; border-bottom: 2px solid #ddd; margin-bottom: 20px; display: flex; gap: 10px; }
+        button { cursor: pointer; border: none; border-radius: 5px; font-weight: bold; padding: 10px 15px; transition: 0.2s; }
+        .btn-create { background: #007bff; color: white; grid-column: span 3; margin-top: 10px; height: 45px; font-size: 16px; }
+        .btn-download { background: #28a745; color: white; }
+        .btn-delete { background: #dc3545; color: white; float: right; padding: 5px 10px; font-size: 11px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="controls">
+        <input type="file" id="fileInput" accept=".js,.json">
+        <button class="btn-download" onclick="saveAndDownload()">Verileri JS Olarak Kaydet</button>
+    </div>
+
+    <h3 class="section-title">Otomatik Toplu Parti Oluştur</h3>
+    <div class="batch-panel">
+        <div class="form-group full-width"><label>İhale Adı</label><input type="text" id="b_ihaleAdı"></div>
+        <div class="form-group"><label>İKN No</label><input type="text" id="b_ikn"></div>
+        <div class="form-group"><label>Yüklenici Firma</label><input type="text" id="b_firma"></div>
+        <div class="form-group"><label>Toplam Sözleşme Tutarı</label>
+            <input type="text" id="b_toplamTutar" class="tutar-input" oninput="formatInput(this)">
+        </div>
+        <div class="form-group"><label>Kaç Parti?</label><input type="number" id="b_partiSayisi" value="1"></div>
+        <div class="form-group"><label>İlk Termin Tarihi</label><input type="date" id="b_ilkTarih"></div>
+        <div class="form-group"><label>Termin Aralığı (Gün)</label><input type="number" id="b_gunAraligi" value="30"></div>
+        <button class="btn-create" onclick="generateBatch()">Sihirbazı Çalıştır</button>
+    </div>
+
+    <h3 class="section-title">Mevcut Liste</h3>
+    <div id="formContainer"></div>
+</div>
+
+<script>
+    let rawData = [];
+
+    // Binlik ayırıcı formatlama fonksiyonu (10.250.000)
+    function formatNumber(n) {
+        if (!n) return "";
+        return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    // Inputa yazarken formatla
+    function formatInput(el) {
+        let val = el.value.replace(/\D/g, "");
+        el.value = formatNumber(val);
+    }
+
+    // Formattan sayıya çevir (10.250.000 -> 10250000)
+    function deformat(s) {
+        if (typeof s !== 'string') return s;
+        return parseFloat(s.replace(/\./g, "")) || 0;
+    }
+
+    function generateBatch() {
+        const ihaleAdı = document.getElementById('b_ihaleAdı').value;
+        const ikn = document.getElementById('b_ikn').value;
+        const firma = document.getElementById('b_firma').value;
+        const toplamTutar = deformat(document.getElementById('b_toplamTutar').value);
+        const partiSayisi = parseInt(document.getElementById('b_partiSayisi').value) || 1;
+        const gunAraligi = parseInt(document.getElementById('b_gunAraligi').value) || 30;
+        const ilkTarihStr = document.getElementById('b_ilkTarih').value;
+
+        if(!ilkTarihStr) return alert("Tarih seçiniz!");
+
+        const birimTutar = toplamTutar / partiSayisi;
+        let baslangicTarihi = new Date(ilkTarihStr);
+
+        syncData();
+        for (let i = 1; i <= partiSayisi; i++) {
+            const yeniTarih = new Date(baslangicTarihi);
+            yeniTarih.setDate(baslangicTarihi.getDate() + (i - 1) * gunAraligi);
+            rawData.push({
+                "İKN": ikn,
+                "Yüklenici Firma": firma,
+                "İhale Adı": ihaleAdı,
+                "Parti No": i,
+                "Parti Son Teslim Tarihi": yeniTarih.toISOString().split('T')[0],
+                "Parti Tutarı": parseFloat(birimTutar.toFixed(2))
+            });
+        }
+        renderForm();
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let content = e.target.result.trim();
+            if (content.includes('=')) content = content.substring(content.indexOf('=') + 1).trim();
+            if (content.endsWith(';')) content = content.slice(0, -1);
+            try { rawData = JSON.parse(content); renderForm(); } catch (err) { alert("Hata!"); }
+        };
+        reader.readAsText(file);
+    });
+
+    function renderForm() {
+        const container = document.getElementById('formContainer');
+        container.innerHTML = '';
+        rawData.forEach((item, index) => {
+            const block = document.createElement('div');
+            block.className = 'entry-block';
+            let gridHtml = `<div class="grid-form">`;
+
+            for(const key in item) {
+                const isTutar = key === "Parti Tutarı";
+                const displayVal = isTutar ? formatNumber(item[key]) : item[key];
+                const inputClass = isTutar ? 'data-input tutar-input' : 'data-input';
+                const onInputAttr = isTutar ? 'oninput="formatInput(this)"' : '';
+
+                gridHtml += `
+                    <div class="form-group">
+                        <label>${key}</label>
+                        <input type="text" value="${displayVal}" data-index="${index}" data-key="${key}" class="${inputClass}" ${onInputAttr}>
+                    </div>`;
+            }
+            gridHtml += `</div><button class="btn-delete" onclick="deleteEntry(${index})">Sil</button>`;
+            block.innerHTML = gridHtml;
+            container.appendChild(block);
+        });
+    }
+
+    function syncData() {
+        const inputs = document.querySelectorAll('.data-input');
+        inputs.forEach(input => {
+            const idx = input.dataset.index;
+            const key = input.dataset.key;
+            let val = input.value;
+            if (key === "Parti Tutarı" || key === "Parti No") {
+                val = deformat(val);
+            }
+            if (rawData[idx]) rawData[idx][key] = val;
+        });
+    }
+
+    function deleteEntry(index) {
+        if(confirm("Silinsin mi?")) { syncData(); rawData.splice(index, 1); renderForm(); }
+    }
+
+    function saveAndDownload() {
+        syncData();
+        const finalContent = `const ihaleVerileri = ${JSON.stringify(rawData, null, 4)};`;
+        const blob = new Blob([finalContent], { type: 'application/javascript' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'veriler.js'; a.click();
+    }
+</script>
+</body>
+</html>

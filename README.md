@@ -5,78 +5,136 @@ Gemini'a taleplerimi ileterek kodlattığım web uygulamasını, istifadenize su
 
 # Uygulamanın Özellikleri
 
-* **index.html** dosyası çalıştırıldığında aşağıdaki boş takvim ile karşılaşıyoruz. **Bugün** bilgisi, takvim üzerindeki açık sarı renk ile temsil edilir.
+* **index.html** dosyası çalıştırıldığında aşağıdaki gibi bir takvim ile karşılaşıyoruz. **Bugün** bilgisi, takvim üzerindeki açık sarı arkaplan rengi ile temsil ediliyor.
 
 ![SS_01.png](img/SS_01.png)
 
-* **CSV** uzantılı **veri dosyası** seçildiğinde, dosya içeriğindeki bilgiler, takvimde ilgili yerlere yerleşiyor. Bilgi Kartları ve botunlarda bilgiler görüntüleniyor.
+* Takvim uygulaması (index.html) çalıştırıldığında, üzerindeki tüm veriyi aynı dizindeki **veriler.js isimli JSON**  dosyasından alıyor/okuyor.
+* Takvim üzerindeki bilgilerden birine tıklandığında açılır pencere içinde İhaleye ait detaylar görüntüleniyor. Örneğin 2 Ocaktaki işe tıkladığımızda aşağıdaki pencere açılıyor. Bugün 10 Ocak olduğu için tıkladığımız termin bilgisi kırmızı arkaplan rengi ile gösteriliyor ve "PARTİ TESLİM SÜRESİ GEÇTİ" bilgisi yazıyor.
 
 ![SS_02.png](img/SS_02.png)
 
-* **Tamamlanmış İşleri Gizle** seçeneği varsayılan olarak **aktif** olacak şekilde ayarlandığı için, mevcut devam eden işlere ait bilgi (İhale adı, Yüklenici adı ve Genel Özet) görüntüleniyor. Aşağıdaki resimde, **İhale Adı** açılır menüsünde sadece mevcut devam eden işlere ait bilgiler görüntüleniyor.
+* **Tümünü Gör** butonuna basıldığında ise Geçerli iş ve yükleniciye ait detaylar görünüyor. Geçmiş tarihli parti bilgileri kırmızı renkli olarak gösterilir.
 
 ![SS_03.png](img/SS_03.png)
 
-* Aşağıdaki resimde, **Yüklenici Firma** açılır menüsünde sadece mevcut devam eden işlere ait bilgiler görüntüleniyor.
+* Takvimde ileri tarihli bir işe/partiye ait bilgiye tıklarsak (örneğin 24 Ocak) açılan PARTİ BİLGİSİ penceresinde "PARTİ TESLİM ZAMANI" yazısını ve arkaplanın yeşil olduğunu görürsünüz. 
 
 ![SS_04.png](img/SS_04.png)
 
-* **Tamamlanmış İşleri Gizle** seçeneği **pasifleştirilirse**, CSV dosyasındaki biten işlere ait detaylar da (yani tüm veri) hem açılır menülerde, hem özet bilgilerde hem de takvimde gösterilir. Aşağıdaki resimde, **İhale Adı** açılır menüsünde tüm işlere ait bilgiler görüntüleniyor.
+* **Tümünü Gör** butonuna basıldığında ise Geçerli iş ve yükleniciye ait detaylar görünüyor.
 
 ![SS_05.png](img/SS_05.png)
 
-* Aşağıdaki resimde, **Yüklenici Firma** açılır menüsünde tüm işlere ait bilgiler görüntüleniyor. Bazı yüklenici firmaların hem biten hem de devam eden işleri olduğu için her halükarda menüde ismi görünür.
+* Ana sayfanın sol üst kısmındaki **OK Tuşları (🡄 🡆)** ile aylar arasında gezinebilir, **BUGÜN** butonu ile de güncel güne ait aya dönebilirsiniz. Örneğin Ok tuşu ile Mart ayına gelip o aya ait iş ve parti bilgilerini görebiliri. 
 
 ![SS_06.png](img/SS_06.png)
 
-* **İhale  Adı** ya da **Yüklenici Firma** açılır menülerinden seçim yapılmadan **Kalan Termin Detaylarını Göster** butonuna tıklandığında tüm devam eden işlere (ihalelere) ait bilgilere görüntülenir.
+* Ya da Sol Ok tuşu ile geri gidip Şubat Ayı verilerini **AJANDA** görünümünde görebiliriz.
 
 ![SS_07.png](img/SS_07.png)
 
-* **Detayları Görüntüle** butonuna basılırsa, ilgili işin genel bilgilerinin yanında (İhale adı, Yüklenici Firma, İhale Kayıt Numarası, Sözleşme Tutarı), ihalenin toplam kaç partiden oluştuğu, parti son teslim tarihleri, bu tarihlerin geçip geçmediği ve parti tutarları görüntülenir.
+* **AJANDA** görünümündeyken **PDF/YAZDIR** butonuna tıklayarak o ayki faaliyetleri kolayca çıktı alacak hale getirebilir ya da yazdırabiliriz.
 
 ![SS_08.png](img/SS_08.png)
 
-* **Tamamlanmış İşleri Göster** butonuna tıklandığında, **İhale Adı** ve **Son partinin teslim tarihi** bilgileri liste görüntülenir.
+* Takvimin **AY** görünümüne geçerek **BUGÜN** butonuna basıyor ve ay içindeki işleri / partileri görüyoruz.
 
 ![SS_09.png](img/SS_09.png)
 
-* Listede herhangi bir İş seçilirse, ilgili işin genel bilgileri yani İhale adı, Yüklenici Firma, İhale Kayıt Numarası, Sözleşme Tutarı, ihalenin toplam kaç partiden oluştuğu, partilere ait son teslim tarihleri ve parti tutarları görüntülenir.
+* Takvimin **AY** görünümüne geçerek **BUGÜN** butonuna basıyor ve ay içindeki işleri / partileri görüyoruz.
 
 ![SS_10.png](img/SS_10.png)
 
-* Takvim üzerinde her iş (ihale) farklı bir renkte görüntülenir. Bir işe tıklandığında, o partiye ait detaylar görüntülenir.
+* Sol Kısımdaki "**TAMAMLANAN**" bilgi kartına tıkladığımızda, takvim üzerinde sadece tamamlanan işlere ait bilgiler görüntülenir. 
 
 ![SS_11.png](img/SS_11.png)
 
-* Takvim üzerindeki **ok tuşları** yardımıyla ileri tarihlere gidilerek devam edecek işlere/partilere  ait detaylar görüntülenebilir.
+* Geri Ok butonu ile **KASIM** ayına gidildiğinde tamamlanan işlere ait bilgiler görüntülenebilir. xxxxxxxxxxx burada kaldım ama tam bitmedi, kontrol et, düzenle
 
 ![SS_12.png](img/SS_12.png)
 
-* Takvim üzerindeki **ok tuşları** yardımıyla geçmiş tarihlere gidilerek devam eden ya da biten işlere ait detaylar görüntülenebilir.
+* Takvim 
 
 ![SS_13.png](img/SS_13.png)
 
-* **Yüklenici Firma** açılır menüsünden bir Yüklenici seçilirse, Takvim üzerinde sadece o Yükleniciye ait ihalelere ve parti bilgileri görüntülenir. Yani Yükleniciye filtre uygulanır. Aşağıdaki resimde, **Hassas Ölçüm San.  ve Tic. A.Ş**.'nin ihale ve parti bilgileri filtre uygulanarak gösterilmiştir. Filtreyi temizlemek için **Filtreleri Temizle** butonuna basılabilir.
+* **Yüklenici Firma** açılır
 
 ![SS_14.png](img/SS_14.png)
 
-* **İhale Adı** açılır menüsünden bir İhale seçilirse, Takvim üzerinde sadece o İhaleye ait parti bilgileri görüntülenir. Yani İhale Adına filtre uygulanır. Aşağıdaki resimde, **Pirinç Malzemeden Mamul Manşon Tip Bağlantı Parçası** İşine (ihalesine) filtre uygulanarak takvim bilgisi gösterilmiştir. Filtreyi temizlemek için **Filtreleri Temizle** butonuna basılabilir.
+* **İhale Adı** açılır menir.
 
 ![SS_15.png](img/SS_15.png)
 
-* Yüklenen CSV dosya ayarlarını değiştirebileceğiniz **CSV Sütun Yapılandırma Ayarları**nı gizleyip gösterebilirsiniz. Elinizdeki CSV dosyasının içeriğine göre, ayarları bu bölümden düzenleyebilirsiniz.
+* Yüklenen CSV düzenleyebilirsiniz.
 
 ![SS_16.png](img/SS_16.png)
 
-* Takvimde gösterilen İhale (iş) renklerini bu bölümden değiştirebilir / ayarlayabilirsiniz. İhale adına göre bir renk seçtikten sonra aşağıdaki **Renkleri Kaydet ve Uygula** butonuna basmalısınız. 
+* Takvimde gös basmalısınız. 
 
 ![SS_17.png](img/SS_17.png)
 
-* İhale adının yanındaki renk butonuna basıldığında, kullanılan işletim sistemine ait renk seçici palet görüntülenir. Aşağıda Kubuntu Linux işletim sistemine ait renk paleti görünmektedir. Açık Mor rengi seçilip kayıt tamamlanıyor. 
+* İhale adının ymamlanıyor. 
 
 ![SS_18.png](img/SS_18.png)
 
-* Kayıt işlemi sonrası takvim üzerinde İlgili ihalenin rengi mor olarak görüntüleniyor. 
+* Kayıtrak görüntüleniyor. 
 
 ![SS_19.png](img/SS_19.png)
+
+* aciklama
+  ![SS_20.png](img/SS_20.png)
+
+* aciklama
+  ![SS_21.png](img/SS_21.png)
+
+* aciklama
+  ![SS_22.png](img/SS_22.png)
+
+* aciklama
+  ![SS_23.png](img/SS_23.png)
+
+* aciklama
+  ![SS_24.png](img/SS_24.png)
+
+* aciklama
+  ![SS_25.png](img/SS_25.png)
+
+* aciklama
+  ![SS_26.png](img/SS_26.png)
+
+* aciklama
+  ![SS_27.png](img/SS_27.png)
+
+* aciklama
+  ![SS_28.png](img/SS_28.png)
+
+* aciklama
+  ![SS_29.png](img/SS_29.png)
+
+* aciklama
+  ![SS_30.png](img/SS_30.png)
+
+* aciklama
+  ![SS_31.png](img/SS_31.png)
+
+* aciklama
+  ![SS_32.png](img/SS_32.png)
+
+* aciklama
+  ![SS_33.png](img/SS_33.png)
+
+* aciklama
+  ![SS_34.png](img/SS_34.png)
+
+* aciklama
+  ![SS_35.png](img/SS_35.png)
+
+* aciklama
+  ![SS_36.png](img/SS_36.png)
+
+* aciklama
+  ![SS_37.png](img/SS_37.png)
+
+* aciklama
+  ![SS_38.png](img/SS_38.png)
