@@ -169,6 +169,30 @@
         }
 
         /* Reset grid specific style */
+        /* Summary Table Styles */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .summary-table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .summary-table .amount-col {
+            text-align: right;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -177,7 +201,7 @@
     <div class="container">
         <div class="controls">
             <input type="file" id="fileInput" accept=".js,.json">
-            <button class="btn-download" onclick="saveAndDownload()">Verileri JS Olarak Kaydet</button>
+            <button class="btn-download" onclick="showSaveSummary()">Verileri JS Olarak Kaydet</button>
         </div>
 
         <h3 class="section-title">Yeni İhale Kayıt Ekranı</h3>
@@ -214,25 +238,55 @@
         </div>
     </dialog>
 
+    <dialog id="summaryDialog" style="max-width: 1100px; width: 95%;">
+        <h3 style="margin-top: 0;">Kayıt Öncesi Özet</h3>
+        <p style="font-size: 14px; color: #666;">İKN ve Firma bazlı toplam sözleşme tutarları:</p>
+        <div id="summaryTableContainer" style="max-height: 400px; overflow-y: auto;">
+            <!-- Table will be injected here -->
+        </div>
+        <div class="dialog-buttons" style="margin-top: 25px;">
+            <button class="btn-download" onclick="saveAndDownload()">Kaydet ve İndir</button>
+            <button class="btn-clear" onclick="document.getElementById('summaryDialog').close()"
+                style="background:gray">İptal</button>
+        </div>
+    </dialog>
+
     <script>
         let rawData = [];
 
-        // Binlik ayırıcı formatlama fonksiyonu (10.250.000)
+        // Turkish Number Formatting (1.250,50)
         function formatNumber(n) {
-            if (!n) return "";
-            return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            if (n === null || n === undefined || n === "") return "";
+            let num = parseFloat(n);
+            if (isNaN(num)) return n;
+            return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(num);
         }
 
-        // Inputa yazarken formatla
+        // Handle user input for Turkish format
         function formatInput(el) {
-            let val = el.value.replace(/\D/g, "");
-            el.value = formatNumber(val);
+            let cursorPosition = el.selectionStart;
+            let originalLength = el.value.length;
+
+            // Allow only digits and one comma
+            let val = el.value.replace(/[^\d,]/g, "");
+            let parts = val.split(",");
+            if (parts.length > 2) val = parts[0] + "," + parts.slice(1).join("");
+
+            // Format thousands with dots
+            let integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            let formatted = integerPart + (parts.length > 1 ? "," + parts[1].substring(0, 2) : "");
+
+            el.value = formatted;
+
+            // Adjust cursor position
+            let newLength = el.value.length;
+            el.setSelectionRange(cursorPosition + (newLength - originalLength), cursorPosition + (newLength - originalLength));
         }
 
-        // Formattan sayıya çevir (10.250.000 -> 10250000)
+        // Parse Turkish format to JS Float (1.250,50 -> 1250.50)
         function deformat(s) {
             if (typeof s !== 'string') return s;
-            return parseFloat(s.replace(/\./g, "")) || 0;
+            return parseFloat(s.replace(/\./g, "").replace(",", ".")) || 0;
         }
 
         function generateBatch() {
@@ -249,6 +303,20 @@
             if (partiSayisi <= 0) return alert("Parti sayısı 1 veya daha büyük olmalıdır.");
             if (gunAraligi <= 0) return alert("Termin aralığı geçerli olmalıdır.");
             if (!ilkTarihStr) return alert("Tarih seçiniz!");
+
+            // Proactive Conflict Check (Combined Key: IKN + Name)
+            const existingMatch = rawData.find(item => item["İKN"] === ikn && item["İhale Adı"] === ihaleAdı);
+            if (existingMatch) {
+                const firmConflict = existingMatch["Yüklenici Firma"] !== firma;
+
+                if (firmConflict) {
+                    let warnMsg = `DİKKAT: Bu İhale (İKN: ${ikn}, Ad: ${ihaleAdı}) zaten kayıtlı!\n\n`;
+                    warnMsg += `Mevcut Firma: ${existingMatch["Yüklenici Firma"]}\nGirilen Firma: ${firma}\n\n`;
+                    warnMsg += "Firma ismindeki bu tutarsızlığa rağmen devam etmek istiyor musunuz?";
+
+                    if (!confirm(warnMsg)) return;
+                }
+            }
 
             const birimTutar = toplamTutar / partiSayisi;
             let baslangicTarihi = new Date(ilkTarihStr);
@@ -297,7 +365,18 @@
                 block.className = 'entry-block';
                 let gridHtml = `<div class="grid-form">`;
 
+                const excludedKeys = [
+                    "Ambar teslimi gerçekleşti",
+                    "Testler başladı",
+                    "Test sonuçları geldi",
+                    "Muayene Ve Kabul Heyet Raporu imza aşamasında",
+                    "Kabul İşlemi",
+                    "Açıklama"
+                ];
+
                 for (const key in item) {
+                    if (excludedKeys.includes(key)) continue;
+
                     const isTutar = key === "Parti Tutarı";
                     const displayVal = isTutar ? formatNumber(item[key]) : item[key];
                     const inputClass = isTutar ? 'data-input tutar-input' : 'data-input';
@@ -357,7 +436,127 @@
             deleteIndex = null;
         }
 
+        function showSaveSummary() {
+            syncData();
+            if (rawData.length === 0) return alert("Kaydedilecek veri bulunamadı.");
+
+            // Validation & Grouping Logic
+            const tenderMap = {}; // ikn_name -> Set of firms
+            const dataGroups = []; // [ { ikn, name, firm, total, isConflict } ]
+
+            rawData.forEach(item => {
+                const ikn = item['İKN'] || "Belirtilmemiş";
+                const name = item['İhale Adı'] || "Belirtilmemiş";
+                const firm = item['Yüklenici Firma'] || "Belirtilmemiş";
+                const amount = item['Parti Tutarı'] || 0;
+
+                // Track firms per IKN + Name (Combined Key)
+                const tenderKey = `${ikn}_${name}`;
+                if (!tenderMap[tenderKey]) tenderMap[tenderKey] = new Set();
+                tenderMap[tenderKey].add(firm);
+
+                // Group for total display
+                let group = dataGroups.find(g => g.ikn === ikn && g.name === name && g.firm === firm);
+                if (group) {
+                    group.total += amount;
+                } else {
+                    dataGroups.push({ ikn, name, firm, total: amount, isConflict: false });
+                }
+            });
+
+            // Identify Conflicts
+            let hasConflicts = false;
+            dataGroups.forEach(g => {
+                const tenderKey = `${g.ikn}_${g.name}`;
+                if (tenderMap[tenderKey].size > 1) {
+                    g.isConflict = true;
+                    hasConflicts = true;
+                }
+            });
+
+            // Build UI
+            let contentHtml = '';
+            if (hasConflicts) {
+                contentHtml += `
+                    <div style="background: #fff5f5; border: 1px solid #feb2b2; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <h4 style="color: #c53030; margin-top: 0;"><i class="fa-solid fa-triangle-exclamation"></i> Veri Çakışması Raporu</h4>
+                        <p style="color: #c53030; font-size: 13px; margin: 0 0 10px 0;">Aynı İhale (İKN & İhale Adı) için farklı firmalar tespit edildi:</p>
+                        
+                        <table class="summary-table" style="border-color: #feb2b2;">
+                            <thead style="background: #fed7d7;">
+                                <tr>
+                                    <th>İKN</th>
+                                    <th>İhale Adı</th>
+                                    <th>Yüklenici Firma</th>
+                                    <th>Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                dataGroups.filter(g => g.isConflict).forEach(g => {
+                    contentHtml += `
+                        <tr style="background: #fff;">
+                            <td><b>${g.ikn}</b></td>
+                            <td>${g.name}</td>
+                            <td>${g.firm}</td>
+                            <td style="color: #c53030; font-weight: bold;">Firma Çakışması</td>
+                        </tr>
+                    `;
+                });
+
+                contentHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            // Grouped Amount Table
+            contentHtml += `
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>İKN</th>
+                            <th>İhale Adı</th>
+                            <th>Yüklenici Firma</th>
+                            <th class="amount-col">Toplam Tutar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            let overallTotal = 0;
+            dataGroups.forEach(g => {
+                const rowStyle = g.conflictType ? 'style="background: #fff5f5; color: #c53030;"' : '';
+                contentHtml += `
+                    <tr ${rowStyle}>
+                        <td>${g.ikn}</td>
+                        <td>${g.name}</td>
+                        <td>${g.firm}</td>
+                        <td class="amount-col">${formatNumber(g.total.toFixed(2))} ₺</td>
+                    </tr>
+                `;
+                overallTotal += g.total;
+            });
+
+            contentHtml += `
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: #f9f9f9; font-weight: bold;">
+                            <td colspan="3" style="text-align: right;">GENEL TOPLAM:</td>
+                            <td class="amount-col">${formatNumber(overallTotal.toFixed(2))} ₺</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+
+            document.getElementById('summaryTableContainer').innerHTML = contentHtml;
+            document.getElementById('summaryDialog').showModal();
+        }
+
         function saveAndDownload() {
+            document.getElementById('summaryDialog').close();
             syncData();
             const finalContent = `const ihaleVerileri = ${JSON.stringify(rawData, null, 4)};`;
             const blob = new Blob([finalContent], { type: 'application/javascript' });

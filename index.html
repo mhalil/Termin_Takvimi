@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,88 +16,230 @@
     <script src="veriler.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
-        .sidebar { width: 22%; min-width: 300px; max-width: 400px; }
-        #calendar { background: white; padding: 1.5rem; border-radius: 1.5rem; height: calc(100vh - 40px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .fc-header-toolbar { margin-bottom: 1.5rem !important; }
-        .fc-toolbar-chunk:nth-child(1), .fc-toolbar-chunk:nth-child(2) { display: none; }
-        .fc-list-event-time { display: none !important; }
-        .fc-button-primary {
-            background-color: #f1f5f9 !important; border: none !important; color: #475569 !important;
-            font-weight: bold !important; font-size: 0.7rem !important; border-radius: 0.5rem !important;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
         }
-        .fc-button-active { background-color: #6366f1 !important; color: white !important; }
-        .modal-overlay { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none !important; position: fixed; inset: 0; z-index: 100; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .fc-event { border: none !important; padding: 2px 4px; border-radius: 4px !important; cursor: pointer; }
-        .fc-event-title { font-weight: 700 !important; font-size: 0.7rem !important; }
+
+        .sidebar {
+            width: 22%;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        #calendar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+            height: calc(100vh - 40px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .fc-header-toolbar {
+            margin-bottom: 1.5rem !important;
+        }
+
+        .fc-toolbar-chunk:nth-child(1),
+        .fc-toolbar-chunk:nth-child(2) {
+            display: none;
+        }
+
+        .fc-list-event-time {
+            display: none !important;
+        }
+
+        .fc-button-primary {
+            background-color: #f1f5f9 !important;
+            border: none !important;
+            color: #475569 !important;
+            font-weight: bold !important;
+            font-size: 0.7rem !important;
+            border-radius: 0.5rem !important;
+        }
+
+        .fc-button-active {
+            background-color: #6366f1 !important;
+            color: white !important;
+        }
+
+        .modal-overlay {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            display: none !important;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .fc-event {
+            border: none !important;
+            padding: 2px 4px;
+            border-radius: 4px !important;
+            cursor: pointer;
+        }
+
+        .fc-event-title {
+            font-weight: 700 !important;
+            font-size: 0.7rem !important;
+        }
 
         /* SEÇİLİ KART STİLLERİ */
         .active-status-card {
             border: 2px solid #6366f1 !important;
-            ring: 4px;
-            ring-color: #indigo-200;
+            box-shadow: 0 0 0 4px #c7d2fe, 0 10px 15px -3px rgba(99, 102, 241, 0.2);
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
         }
 
         @keyframes pulse-red {
-            0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+            0% {
+                transform: scale(0.98);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                transform: scale(0.98);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
         }
-        .delay-pulse { animation: pulse-red 2s infinite; background-color: #ef4444 !important; color: white !important; }
+
+        .delay-pulse {
+            animation: pulse-red 2s infinite;
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
 
         .print-btn {
-            position: absolute; top: 1.25rem; right: 8.5rem; z-index: 50;
-            background: #ef4444; color: white; padding: 0.5rem 1rem;
-            border-radius: 0.75rem; font-size: 0.7rem; font-weight: 800;
-            display: none; align-items: center; gap: 0.5rem; transition: all 0.2s;
+            position: absolute;
+            top: 1.25rem;
+            right: 8.5rem;
+            z-index: 50;
+            background: #ef4444;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
         }
 
         @media print {
-            @page { size: portrait; margin: 0; }
-            html, body { height: auto !important; overflow: visible !important; background: white !important; }
-            .sidebar, .fc-header-toolbar, .fc-button, .print-btn, #monthly-detail-container button { display: none !important; }
-            main { position: static !important; width: 100% !important; padding: 0 !important; margin: 0 !important; overflow: visible !important; }
-            #calendar { border: none !important; box-shadow: none !important; height: auto !important; min-height: auto !important; overflow: visible !important; display: block !important; }
-            .fc-scroller, .fc-scroller-harness { height: auto !important; overflow: visible !important; position: static !important; }
-            .fc-list-table { width: 100% !important; border: 1px solid #eee !important; table-layout: auto !important; }
-            .fc-view-harness { height: auto !important; }
+            @page {
+                size: portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                height: auto !important;
+                overflow: visible !important;
+                background: white !important;
+            }
+
+            .sidebar,
+            .fc-header-toolbar,
+            .fc-button,
+            .print-btn,
+            #monthly-detail-container button {
+                display: none !important;
+            }
+
+            main {
+                position: static !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+
+            #calendar {
+                border: none !important;
+                box-shadow: none !important;
+                height: auto !important;
+                min-height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+            }
+
+            .fc-scroller,
+            .fc-scroller-harness {
+                height: auto !important;
+                overflow: visible !important;
+                position: static !important;
+            }
+
+            .fc-list-table {
+                width: 100% !important;
+                border: 1px solid #eee !important;
+                table-layout: auto !important;
+            }
+
+            .fc-view-harness {
+                height: auto !important;
+            }
         }
     </style>
 </head>
+
 <body class="flex h-screen overflow-hidden">
 
     <aside class="sidebar bg-white border-r border-slate-200 flex flex-col z-30 shadow-2xl">
         <div class="p-6 bg-slate-900 text-white text-center">
-            <h1 class="font-extrabold text-2xl tracking-tighter italic">TERMİN TAKİP <span class="text-indigo-400">TAKVİMİ</span></h1>
+            <h1 class="font-extrabold text-2xl tracking-tighter italic">İHALE <span
+                    class="text-indigo-400">TAKİBİ</span></h1>
         </div>
 
         <div class="p-5 flex-1 space-y-5 overflow-y-auto custom-scrollbar flex flex-col">
             <div class="space-y-2">
                 <div class="flex items-center gap-2">
-                    <button onclick="calendar.today()" class="flex-1 py-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg text-l font-bold transition-all shadow-sm">BUGÜN</button>
-                    <button onclick="calendar.prev()" class="p-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg shadow-sm">◀</button>
-                    <button onclick="calendar.next()" class="p-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg shadow-sm">▶</button>
+                    <button onclick="calendar.today()"
+                        class="flex-1 py-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg text-l font-bold transition-all shadow-sm">BUGÜN</button>
+                    <button onclick="calendar.prev()"
+                        class="p-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg shadow-sm">◀</button>
+                    <button onclick="calendar.next()"
+                        class="p-2 bg-slate-100 hover:bg-indigo-600 hover:text-white rounded-lg shadow-sm">▶</button>
                 </div>
-                <div id="calendar-title-display" class="text-center font-bold text-indigo-600 text-[24px] uppercase tracking-widest"></div>
+                <div id="calendar-title-display"
+                    class="text-center font-bold text-indigo-600 text-[24px] uppercase tracking-widest"></div>
             </div>
 
             <hr class="border-slate-100">
 
             <div class="space-y-3">
-                <div id="card-devam" class="relative group p-4 bg-emerald-50 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all duration-300" onclick="toggleStatusFilter('devam')">
+                <div id="card-devam"
+                    class="relative group p-4 bg-emerald-50 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all duration-300"
+                    onclick="toggleStatusFilter('devam')">
                     <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">DEVAM EDEN</span>
                     <div id="active-count-display" class="text-xl font-black text-emerald-700 mt-1">0 Adet</div>
-                    <button onclick="event.stopPropagation(); showTutarModal('devam')" class="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-sm hover:bg-emerald-600 hover:text-white transition-all text-emerald-600">👁</button>
+                    <button onclick="event.stopPropagation(); showTutarModal('devam')"
+                        class="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-sm hover:bg-emerald-600 hover:text-white transition-all text-emerald-600">👁</button>
                 </div>
 
-                <div id="card-tamam" class="relative group p-4 bg-slate-100 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all duration-300" onclick="toggleStatusFilter('tamam')">
+                <div id="card-tamam"
+                    class="relative group p-4 bg-slate-100 border-2 border-transparent rounded-2xl shadow-sm cursor-pointer transition-all duration-300"
+                    onclick="toggleStatusFilter('tamam')">
                     <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TAMAMLANAN</span>
                     <div id="completed-count-display" class="text-xl font-black text-slate-700 mt-1">0 Adet</div>
-                    <button onclick="event.stopPropagation(); showTutarModal('tamam')" class="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-sm hover:bg-slate-800 hover:text-white transition-all text-slate-600">👁</button>
+                    <button onclick="event.stopPropagation(); showTutarModal('tamam')"
+                        class="absolute top-4 right-4 p-2 bg-white rounded-lg shadow-sm hover:bg-slate-800 hover:text-white transition-all text-slate-600">👁</button>
                 </div>
             </div>
 
@@ -104,20 +247,30 @@
 
             <div class="space-y-4 flex-1">
                 <div class="space-y-1.5">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Firma Bazlı</label>
-                    <select id="firma-filter" onchange="handleFirmaChange()" class="w-full rounded-xl border-slate-200 bg-slate-50 text-xs p-3 outline-none border focus:ring-2 focus:ring-indigo-500 transition-all"></select>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Firma
+                        Bazlı</label>
+                    <select id="firma-filter" onchange="handleFirmaChange()"
+                        class="w-full rounded-xl border-slate-200 bg-slate-50 text-xs p-3 outline-none border focus:ring-2 focus:ring-indigo-500 transition-all"></select>
                 </div>
                 <div class="space-y-1.5">
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">İhale Bazlı</label>
-                    <select id="ihale-filter" onchange="handleIhaleChange()" class="w-full rounded-xl border-slate-200 bg-slate-50 text-xs p-3 outline-none border focus:ring-2 focus:ring-indigo-500 transition-all"></select>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">İhale
+                        Bazlı</label>
+                    <select id="ihale-filter" onchange="handleIhaleChange()"
+                        class="w-full rounded-xl border-slate-200 bg-slate-50 text-xs p-3 outline-none border focus:ring-2 focus:ring-indigo-500 transition-all"></select>
                 </div>
             </div>
 
             <div class="space-y-2 mt-auto">
-                <button onclick="window.open('edit.html', '_blank')" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[12px] font-bold transition-all shadow-lg flex items-center justify-center gap-2">
-                    📥 VERİ DÜZENLE / EKLE
+                <button onclick="window.open('edit.html', '_blank')"
+                    class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[12px] font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+                    📥 VERİ DÜZENLE / EKLE ->
                 </button>
-                <button onclick="resetAll()" class="w-full py-3 bg-slate-800 hover:bg-red-600 text-white rounded-xl text-[12px] font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+                <button onclick="window.open('takip.html', '_blank')"
+                    class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[12px] font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+                    📊 TERMİN TAKİBİ ->
+                </button>
+                <button onclick="resetAll()"
+                    class="w-full py-3 bg-slate-800 hover:bg-red-600 text-white rounded-xl text-[12px] font-bold transition-all shadow-lg flex items-center justify-center gap-2">
                     🔄 FİLTRELERİ SIFIRLA
                 </button>
             </div>
@@ -126,7 +279,11 @@
 
     <main class="flex-1 p-5 overflow-hidden bg-slate-50 relative">
         <button id="pdf-print-btn" onclick="prepareAndPrint()" class="print-btn shadow-lg">
-            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z">
+                </path>
+            </svg>
             PDF / YAZDIR
         </button>
         <div id="calendar"></div>
@@ -136,153 +293,164 @@
         <div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                 <div class="flex items-center gap-4">
-                    <button id="modal-back-btn" onclick="showListView()" class="hidden px-3 py-1 bg-white shadow-sm border rounded-xl font-bold text-indigo-600 text-sm">⬅ Geri</button>
+                    <button id="modal-back-btn" onclick="showListView()"
+                        class="hidden px-3 py-1 bg-white shadow-sm border rounded-xl font-bold text-indigo-600 text-sm">⬅
+                        Geri</button>
                     <h2 id="modal-title" class="font-extrabold text-slate-800 text-lg uppercase tracking-tight"></h2>
                 </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-4xl font-light leading-none">&times;</button>
+                <button onclick="closeModal()"
+                    class="text-slate-400 hover:text-slate-600 text-4xl font-light leading-none">&times;</button>
             </div>
             <div id="modal-content" class="flex-1 overflow-y-auto p-8 custom-scrollbar"></div>
         </div>
     </div>
 
-<script>
-    let calendar;
-    let allEvents = [];
-    let groupedData = {};
-    let monthlyDetails = {};
-    const colorMap = {};
-    let currentStatusFilter = null;
-    const today = new Date(); today.setHours(0,0,0,0);
+    <script>
+        let calendar;
+        let allEvents = [];
+        let groupedData = {};
+        let monthlyDetails = {};
+        const colorMap = {};
+        let currentStatusFilter = null;
+        const today = new Date(); today.setHours(0, 0, 0, 0);
 
-    // Veri İşleme ve Takvim Fonksiyonları
-    function temizleTutar(deger) {
-        if (typeof deger === 'number') return deger;
-        if (!deger) return 0;
-        let temiz = deger.toString().replace(/\./g, '').replace(',', '.');
-        return parseFloat(temiz) || 0;
-    }
-
-    function formatPara(sayi) {
-        return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(sayi) + "&nbsp;TL";
-    }
-
-    function getUniqueColor(ikn) {
-        if (!colorMap[ikn]) {
-            const hue = (Object.keys(colorMap).length * 137.5) % 360;
-            colorMap[ikn] = `hsl(${hue}, 70%, 45%)`;
+        // Veri İşleme ve Takvim Fonksiyonları
+        function temizleTutar(deger) {
+            if (typeof deger === 'number') return deger;
+            if (!deger) return 0;
+            let temiz = deger.toString().replace(/\./g, '').replace(',', '.');
+            return parseFloat(temiz) || 0;
         }
-        return colorMap[ikn];
-    }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        if (typeof ihaleVerileri === 'undefined') return;
+        function formatPara(sayi) {
+            return new Intl.NumberFormat('tr-TR', { maximumFractionDigits: 0 }).format(sayi) + "&nbsp;TL";
+        }
 
-        allEvents = ihaleVerileri.map(item => {
-            const isComp = new Date(item['Parti Son Teslim Tarihi']) < today;
-            const eventColor = getUniqueColor(item['İKN']);
-            return {
-                title: `${item['Parti No']}.P | ${item['Yüklenici Firma']} | ${item['İhale Adı']} [İKN: ${item['İKN']}]`,
-                start: item['Parti Son Teslim Tarihi'],
-                backgroundColor: eventColor,
-                borderColor: eventColor,
-                extendedProps: { ...item, isCompleted: isComp }
-            };
+        function getUniqueColor(ikn) {
+            if (!colorMap[ikn]) {
+                const hue = (Object.keys(colorMap).length * 137.5) % 360;
+                colorMap[ikn] = `hsl(${hue}, 70%, 45%)`;
+            }
+            return colorMap[ikn];
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof ihaleVerileri === 'undefined') return;
+
+            allEvents = ihaleVerileri.map(item => {
+                const isComp = new Date(item['Parti Son Teslim Tarihi']) < today;
+                const isCompletedStatus = item['Kabul İşlemi'] === "1";
+                const eventColor = getUniqueColor(item['İKN']);
+                const checkMark = isCompletedStatus ? '✅ ' : '';
+                return {
+                    title: `${checkMark}${item['Parti No']}.P | ${item['Yüklenici Firma']} | ${item['İhale Adı']} [İKN: ${item['İKN']}]`,
+                    start: item['Parti Son Teslim Tarihi'],
+                    backgroundColor: eventColor,
+                    borderColor: eventColor,
+                    extendedProps: { ...item, isCompleted: isComp }
+                };
+            });
+
+            calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                locale: 'tr',
+                initialView: 'dayGridMonth',
+                headerToolbar: { right: 'dayGridMonth,listMonth' },
+                buttonText: { month: 'Ay', list: 'Ajanda' },
+                height: '100%',
+                events: (info, successCallback) => successCallback(getFilteredEvents()),
+                datesSet: (info) => {
+                    document.getElementById('calendar-title-display').innerText = info.view.title;
+                    const printBtn = document.getElementById('pdf-print-btn');
+                    printBtn.style.display = (info.view.type === 'listMonth') ? 'flex' : 'none';
+                },
+                eventClick: (info) => showPartyDetailModal(info.event.extendedProps)
+            });
+
+            calendar.render();
+            processData();
+            updateFilterOptions();
         });
 
-        calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
-            locale: 'tr',
-            initialView: 'dayGridMonth',
-            headerToolbar: { right: 'dayGridMonth,listMonth' },
-            buttonText: { month: 'Ay', list: 'Ajanda' },
-            height: '100%',
-            events: (info, successCallback) => successCallback(getFilteredEvents()),
-            datesSet: (info) => {
-                document.getElementById('calendar-title-display').innerText = info.view.title;
-                const printBtn = document.getElementById('pdf-print-btn');
-                printBtn.style.display = (info.view.type === 'listMonth') ? 'flex' : 'none';
-            },
-            eventClick: (info) => showPartyDetailModal(info.event.extendedProps)
-        });
+        function processData() {
+            groupedData = {};
+            ihaleVerileri.forEach(p => {
+                const key = p['İhale Adı'] + "|" + p['Yüklenici Firma'];
+                if (!groupedData[key]) groupedData[key] = { key, ad: p['İhale Adı'], ikn: p['İKN'], firma: p['Yüklenici Firma'], partiler: [], toplam: 0, durum: 'tamam' };
+                groupedData[key].partiler.push(p);
+                groupedData[key].toplam += temizleTutar(p['Parti Tutarı']);
+                if (new Date(p['Parti Son Teslim Tarihi']) >= today) groupedData[key].durum = 'devam';
+            });
+            updateCounts();
+        }
 
-        calendar.render();
-        processData();
-        updateFilterOptions();
-    });
+        function getFilteredEvents() {
+            const iV = document.getElementById('ihale-filter')?.value;
+            const fV = document.getElementById('firma-filter')?.value;
+            return allEvents.filter(e => {
+                const p = e.extendedProps;
+                const key = p['İhale Adı'] + "|" + p['Yüklenici Firma'];
+                const ihaleDurumu = groupedData[key]?.durum;
+                return (!iV || p['İhale Adı'] === iV) && (!fV || p['Yüklenici Firma'] === fV) && (!currentStatusFilter || ihaleDurumu === currentStatusFilter);
+            });
+        }
 
-    function processData() {
-        groupedData = {};
-        ihaleVerileri.forEach(p => {
-            const key = p['İhale Adı'] + "|" + p['Yüklenici Firma'];
-            if (!groupedData[key]) groupedData[key] = { key, ad: p['İhale Adı'], ikn: p['İKN'], firma: p['Yüklenici Firma'], partiler: [], toplam: 0, durum: 'tamam' };
-            groupedData[key].partiler.push(p);
-            groupedData[key].toplam += temizleTutar(p['Parti Tutarı']);
-            if (new Date(p['Parti Son Teslim Tarihi']) >= today) groupedData[key].durum = 'devam';
-        });
-        updateCounts();
-    }
+        function updateFilterOptions() {
+            const fS = document.getElementById('firma-filter'), iS = document.getElementById('ihale-filter');
+            const selF = fS.value, selI = iS.value;
+            const baseData = Object.values(groupedData).filter(item => !currentStatusFilter || item.durum === currentStatusFilter);
+            const firms = [...new Set(baseData.map(x => x.firma))].sort();
+            fS.innerHTML = '<option value="">Tüm Firmalar</option>';
+            firms.forEach(f => { const o = new Option(f, f); if (f === selF) o.selected = true; fS.add(o); });
+            const ihals = [...new Set(baseData.filter(x => !fS.value || x.firma === fS.value).map(x => x.ad))].sort();
+            iS.innerHTML = '<option value="">Tüm İhaleler</option>';
+            ihals.forEach(i => { const o = new Option(i, i); if (i === selI) o.selected = true; iS.add(o); });
+        }
 
-    function getFilteredEvents() {
-        const iV = document.getElementById('ihale-filter')?.value;
-        const fV = document.getElementById('firma-filter')?.value;
-        return allEvents.filter(e => {
-            const p = e.extendedProps;
-            const key = p['İhale Adı'] + "|" + p['Yüklenici Firma'];
-            const ihaleDurumu = groupedData[key]?.durum;
-            return (!iV || p['İhale Adı'] === iV) && (!fV || p['Yüklenici Firma'] === fV) && (!currentStatusFilter || ihaleDurumu === currentStatusFilter);
-        });
-    }
+        function handleFirmaChange() { updateFilterOptions(); updateCounts(); calendar.refetchEvents(); }
+        function handleIhaleChange() { calendar.refetchEvents(); }
 
-    function updateFilterOptions() {
-        const fS = document.getElementById('firma-filter'), iS = document.getElementById('ihale-filter');
-        const selF = fS.value, selI = iS.value;
-        const baseData = Object.values(groupedData).filter(item => !currentStatusFilter || item.durum === currentStatusFilter);
-        const firms = [...new Set(baseData.map(x => x.firma))].sort();
-        fS.innerHTML = '<option value="">Tüm Firmalar</option>';
-        firms.forEach(f => { const o = new Option(f,f); if(f === selF) o.selected = true; fS.add(o); });
-        const ihals = [...new Set(baseData.filter(x => !fS.value || x.firma === fS.value).map(x => x.ad))].sort();
-        iS.innerHTML = '<option value="">Tüm İhaleler</option>';
-        ihals.forEach(i => { const o = new Option(i,i); if(i === selI) o.selected = true; iS.add(o); });
-    }
+        // GÖRSEL SEÇİM EKLENMİŞ FİLTRE FONKSİYONU
+        function toggleStatusFilter(status) {
+            const devCard = document.getElementById('card-devam');
+            const tamCard = document.getElementById('card-tamam');
 
-    function handleFirmaChange() { updateFilterOptions(); calendar.refetchEvents(); }
-    function handleIhaleChange() { calendar.refetchEvents(); }
-
-    // GÖRSEL SEÇİM EKLENMİŞ FİLTRE FONKSİYONU
-    function toggleStatusFilter(status) {
-        const devCard = document.getElementById('card-devam');
-        const tamCard = document.getElementById('card-tamam');
-
-        if (currentStatusFilter === status) {
-            currentStatusFilter = null;
-            devCard.classList.remove('active-status-card');
-            tamCard.classList.remove('active-status-card');
-        } else {
-            currentStatusFilter = status;
-            if (status === 'devam') {
-                devCard.classList.add('active-status-card');
+            if (currentStatusFilter === status) {
+                currentStatusFilter = null;
+                devCard.classList.remove('active-status-card');
                 tamCard.classList.remove('active-status-card');
             } else {
-                tamCard.classList.add('active-status-card');
-                devCard.classList.remove('active-status-card');
+                currentStatusFilter = status;
+                if (status === 'devam') {
+                    devCard.classList.add('active-status-card');
+                    tamCard.classList.remove('active-status-card');
+                } else {
+                    tamCard.classList.add('active-status-card');
+                    devCard.classList.remove('active-status-card');
+                }
             }
+            updateFilterOptions();
+            calendar.refetchEvents();
         }
-        updateFilterOptions();
-        calendar.refetchEvents();
-    }
 
-    function updateCounts() {
-        let a = 0, c = 0; Object.values(groupedData).forEach(g => { if (g.durum === 'devam') a++; else c++; });
-        document.getElementById('active-count-display').innerText = a + " İhale";
-        document.getElementById('completed-count-display').innerText = c + " İhale";
-    }
+        function updateCounts() {
+            const selectedFirma = document.getElementById('firma-filter')?.value;
+            let a = 0, c = 0;
+            Object.values(groupedData).forEach(g => {
+                if (!selectedFirma || g.firma === selectedFirma) {
+                    if (g.durum === 'devam') a++; else c++;
+                }
+            });
+            document.getElementById('active-count-display').innerText = a + " İhale";
+            document.getElementById('completed-count-display').innerText = c + " İhale";
+        }
 
-    // Modal ve Liste Fonksiyonları
-    function showPartyDetailModal(p) {
-        document.getElementById('modal-container').style.setProperty('display', 'flex', 'important');
-        document.getElementById('modal-back-btn').classList.add('hidden');
-        document.getElementById('modal-title').innerText = "📌 PARTİ BİLGİSİ";
-        const isLate = new Date(p['Parti Son Teslim Tarihi']) < today;
-        document.getElementById('modal-content').innerHTML = `
+        // Modal ve Liste Fonksiyonları
+        function showPartyDetailModal(p) {
+            document.getElementById('modal-container').style.setProperty('display', 'flex', 'important');
+            document.getElementById('modal-back-btn').classList.add('hidden');
+            document.getElementById('modal-title').innerText = "📌 PARTİ BİLGİSİ";
+            const isLate = new Date(p['Parti Son Teslim Tarihi']) < today;
+            document.getElementById('modal-content').innerHTML = `
             <div class="max-w-2xl mx-auto space-y-6">
                 <div class="p-8 bg-slate-900 rounded-[2rem] text-white shadow-2xl relative">
                     <h2 class="text-2xl font-bold leading-tight">${p['İhale Adı']}</h2>
@@ -309,104 +477,105 @@
                     <button onclick="showDetailView('${p['İhale Adı']}|${p['Yüklenici Firma']}')" class="px-4 py-2 bg-white/10 rounded-xl text-xs font-bold border border-white/20">Tümünü Gör</button>
                 </div>
             </div>`;
-    }
+        }
 
-    function showTutarModal(s) { currentStatusFilter = s; document.getElementById('modal-container').style.setProperty('display', 'flex', 'important'); showListView(); }
+        function showTutarModal(s) { currentStatusFilter = s; document.getElementById('modal-container').style.setProperty('display', 'flex', 'important'); showListView(); }
 
-    function showListView() {
-        document.getElementById('modal-back-btn').classList.add('hidden');
-        const isD = currentStatusFilter === 'devam';
-        document.getElementById('modal-title').innerText = isD ? "💰 AKTİF PROJEKSİYON" : "✅ TAMAMLANAN ANALİZİ";
+        function showListView() {
+            document.getElementById('modal-back-btn').classList.add('hidden');
+            const isD = currentStatusFilter === 'devam';
+            document.getElementById('modal-title').innerText = isD ? "💰 AKTİF PROJEKSİYON" : "✅ TAMAMLANAN ANALİZİ";
 
-        const selectedFirma = document.getElementById('firma-filter').value;
-        let list = Object.values(groupedData).filter(g => {
-            const statusMatch = g.durum === currentStatusFilter;
-            const firmaMatch = !selectedFirma || g.firma === selectedFirma;
-            return statusMatch && firmaMatch;
-        }).sort((a,b) => a.ad.localeCompare(b.ad,'tr'));
+            const selectedFirma = document.getElementById('firma-filter').value;
+            let list = Object.values(groupedData).filter(g => {
+                const statusMatch = g.durum === currentStatusFilter;
+                const firmaMatch = !selectedFirma || g.firma === selectedFirma;
+                return statusMatch && firmaMatch;
+            }).sort((a, b) => a.ad.localeCompare(b.ad, 'tr'));
 
-        let tT = 0, aT = 0, aD = {}, yD = {}; monthlyDetails = {};
+            let tT = 0, aT = 0, aD = {}, yD = {}; monthlyDetails = {};
 
-        list.forEach(item => {
-            tT += item.toplam;
-            item.partiler.forEach(p => {
-                const d = new Date(p['Parti Son Teslim Tarihi']), tutar = temizleTutar(p['Parti Tutarı']);
-                if (isD ? (d >= today) : (d < today)) {
-                    aT += tutar;
-                    const ay = d.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
-                    aD[ay] = (aD[ay] || 0) + tutar;
-                    yD[d.getFullYear()] = (yD[d.getFullYear()] || 0) + tutar;
-                    if (!monthlyDetails[ay]) monthlyDetails[ay] = [];
-                    monthlyDetails[ay].push(p);
-                }
+            list.forEach(item => {
+                tT += item.toplam;
+                item.partiler.forEach(p => {
+                    const d = new Date(p['Parti Son Teslim Tarihi']), tutar = temizleTutar(p['Parti Tutarı']);
+                    if (isD ? (d >= today) : (d < today)) {
+                        aT += tutar;
+                        const ay = d.toLocaleString('tr-TR', { month: 'long', year: 'numeric' });
+                        aD[ay] = (aD[ay] || 0) + tutar;
+                        yD[d.getFullYear()] = (yD[d.getFullYear()] || 0) + tutar;
+                        if (!monthlyDetails[ay]) monthlyDetails[ay] = [];
+                        monthlyDetails[ay].push(p);
+                    }
+                });
             });
-        });
 
-        const sortedMonths = Object.entries(aD).sort((a,b) => {
-            const months = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-            const [mA, yA] = a[0].split(' '), [mB, yB] = b[0].split(' ');
-            return yA !== yB ? yA - yB : months.indexOf(mA) - months.indexOf(mB);
-        });
+            const sortedMonths = Object.entries(aD).sort((a, b) => {
+                const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+                const [mA, yA] = a[0].split(' '), [mB, yB] = b[0].split(' ');
+                return yA !== yB ? yA - yB : months.indexOf(mA) - months.indexOf(mB);
+            });
 
-        let h = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            let h = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div class="p-6 ${isD ? 'bg-indigo-600' : 'bg-slate-800'} rounded-3xl text-white text-center">
                 <p class="text-[10px] font-black opacity-70 mb-1">Toplam Hacim</p>
                 <p class="text-3xl font-black">${formatPara(tT)}</p>
             </div>
             <div class="p-6 bg-white border-2 ${isD ? 'border-indigo-600' : 'border-slate-600'} rounded-3xl text-center">
-                <p class="text-[10px] ${isD?'text-indigo-600':'text-slate-600'} font-black mb-1">${isD?'Kalan':'Ödenen'}</p>
+                <p class="text-[10px] ${isD ? 'text-indigo-600' : 'text-slate-600'} font-black mb-1">${isD ? 'Kalan' : 'Ödenen'}</p>
                 <p class="text-3xl font-black">${formatPara(aT)}</p>
             </div>
         </div>
         <div class="mb-8"><div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            ${Object.entries(yD).sort().map(([y,t])=>`<div class="p-4 bg-slate-100 rounded-2xl text-center"><p class="text-[10px] text-slate-500 font-bold">${y}</p><p class="text-lg font-black">${formatPara(t)}</p></div>`).join('')}
+            ${Object.entries(yD).sort().map(([y, t]) => `<div class="p-4 bg-slate-100 rounded-2xl text-center"><p class="text-[10px] text-slate-500 font-bold">${y}</p><p class="text-lg font-black">${formatPara(t)}</p></div>`).join('')}
         </div></div>
         <div class="mb-8"><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            ${sortedMonths.map(([ay,t])=>`<button onclick="showMonthDetail('${ay}')" class="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-2xl text-left hover:bg-indigo-100"><p class="text-[10px] font-bold text-indigo-400">${ay}</p><p class="text-lg font-black text-indigo-700">${formatPara(t)}</p></button>`).join('')}
+            ${sortedMonths.map(([ay, t]) => `<button onclick="showMonthDetail('${ay}')" class="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded-2xl text-left hover:bg-indigo-100"><p class="text-[10px] font-bold text-indigo-400">${ay}</p><p class="text-lg font-black text-indigo-700">${formatPara(t)}</p></button>`).join('')}
         </div></div><div id="monthly-detail-container" class="mb-8 hidden"></div><div class="grid gap-3">`;
 
-        list.forEach(item => {
-            h += `<div onclick="showDetailView('${item.key}')" class="p-5 border rounded-2xl hover:border-indigo-300 transition-all cursor-pointer flex justify-between items-center bg-white">
+            list.forEach(item => {
+                h += `<div onclick="showDetailView('${item.key}')" class="p-5 border rounded-2xl hover:border-indigo-300 transition-all cursor-pointer flex justify-between items-center bg-white">
                 <div>
                     <h3 class="font-bold text-slate-800 text-sm">${item.ad}</h3>
                     <p class="text-[10px] text-slate-400 uppercase mt-1 font-black">İKN: ${item.ikn} | ${item.firma}</p>
                 </div>
-                <div class="font-black text-lg ${isD?'text-indigo-600':'text-slate-600'}">${formatPara(item.toplam)}</div>
+                <div class="font-black text-lg ${isD ? 'text-indigo-600' : 'text-slate-600'}">${formatPara(item.toplam)}</div>
             </div>`;
-        });
-        document.getElementById('modal-content').innerHTML = h + `</div>`;
-    }
+            });
+            document.getElementById('modal-content').innerHTML = h + `</div>`;
+        }
 
-    function showMonthDetail(ay) {
-        const container = document.getElementById('monthly-detail-container');
-        const partiler = monthlyDetails[ay] || [];
-        container.classList.remove('hidden');
-        let html = `<div class="bg-indigo-600 rounded-3xl p-6 text-white shadow-xl"><div class="flex justify-between mb-4"><h4 class="font-black text-sm uppercase">${ay} Detaylı Liste</h4><button onclick="document.getElementById('monthly-detail-container').classList.add('hidden')" class="font-bold">&times; KAPAT</button></div><div class="bg-white rounded-2xl overflow-hidden text-slate-800"><table class="w-full text-[11px]"><thead class="bg-slate-50 border-b"><tr><th class="p-3 text-left">İhale/Firma</th><th class="p-3">Parti</th><th class="p-3 text-right">Tutar</th></tr></thead><tbody>`;
-        partiler.forEach(p => { html += `<tr class="border-b"><td class="p-3"><b>${p['İhale Adı']}</b><br><small>İKN: ${p['İKN']} - ${p['Yüklenici Firma']}</small></td><td class="p-3 text-center">${p['Parti No']}.P</td><td class="p-3 text-right"><b>${formatPara(temizleTutar(p['Parti Tutarı']))}</b></td></tr>`; });
-        container.innerHTML = html + `</tbody></table></div></div>`;
-        container.scrollIntoView({ behavior: 'smooth' });
-    }
+        function showMonthDetail(ay) {
+            const container = document.getElementById('monthly-detail-container');
+            const partiler = monthlyDetails[ay] || [];
+            container.classList.remove('hidden');
+            let html = `<div class="bg-indigo-600 rounded-3xl p-6 text-white shadow-xl"><div class="flex justify-between mb-4"><h4 class="font-black text-sm uppercase">${ay} Detaylı Liste</h4><button onclick="document.getElementById('monthly-detail-container').classList.add('hidden')" class="font-bold">&times; KAPAT</button></div><div class="bg-white rounded-2xl overflow-hidden text-slate-800"><table class="w-full text-[11px]"><thead class="bg-slate-50 border-b"><tr><th class="p-3 text-left">İhale/Firma</th><th class="p-3">Parti</th><th class="p-3 text-right">Tutar</th></tr></thead><tbody>`;
+            partiler.forEach(p => { html += `<tr class="border-b"><td class="p-3"><b>${p['İhale Adı']}</b><br><small>İKN: ${p['İKN']} - ${p['Yüklenici Firma']}</small></td><td class="p-3 text-center">${p['Parti No']}.P</td><td class="p-3 text-right"><b>${formatPara(temizleTutar(p['Parti Tutarı']))}</b></td></tr>`; });
+            container.innerHTML = html + `</tbody></table></div></div>`;
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
 
-    function showDetailView(key) {
-        const item = groupedData[key]; if(!item) return;
-        document.getElementById('modal-back-btn').classList.remove('hidden');
-        document.getElementById('modal-title').innerText = "İŞ DETAYI";
-        let h = `<div class="space-y-4"><div class="p-6 bg-slate-900 rounded-3xl text-white"><h2 class="font-bold">${item.ad}</h2><p class="text-xs text-indigo-400 mt-1 uppercase font-bold">${item.firma} | İKN: ${item.ikn}</p></div><table class="w-full text-xs text-left"><thead class="bg-slate-50 text-slate-400 border-b"><tr><th class="p-4">PARTİ</th><th class="p-4">TARİH</th><th class="p-4 text-right">TUTAR</th></tr></thead><tbody>`;
-        item.partiler.forEach(p => {
-            const late = new Date(p['Parti Son Teslim Tarihi']) < today && item.durum === 'devam';
-            h += `<tr class="border-b"><td class="p-4 font-bold text-indigo-600">${p['Parti No']}.P</td><td class="p-4 ${late?'text-red-600 font-bold':''}">${p['Parti Son Teslim Tarihi']}</td><td class="p-4 text-right font-black">${formatPara(temizleTutar(p['Parti Tutarı']))}</td></tr>`;
-        });
-        document.getElementById('modal-content').innerHTML = h + `</tbody></table></div>`;
-    }
+        function showDetailView(key) {
+            const item = groupedData[key]; if (!item) return;
+            document.getElementById('modal-back-btn').classList.remove('hidden');
+            document.getElementById('modal-title').innerText = "İŞ DETAYI";
+            let h = `<div class="space-y-4"><div class="p-6 bg-slate-900 rounded-3xl text-white"><h2 class="font-bold">${item.ad}</h2><p class="text-xs text-indigo-400 mt-1 uppercase font-bold">${item.firma} | İKN: ${item.ikn}</p></div><table class="w-full text-xs text-left"><thead class="bg-slate-50 text-slate-400 border-b"><tr><th class="p-4">PARTİ</th><th class="p-4">TARİH</th><th class="p-4 text-right">TUTAR</th></tr></thead><tbody>`;
+            item.partiler.forEach(p => {
+                const late = new Date(p['Parti Son Teslim Tarihi']) < today && item.durum === 'devam';
+                h += `<tr class="border-b"><td class="p-4 font-bold text-indigo-600">${p['Parti No']}.P</td><td class="p-4 ${late ? 'text-red-600 font-bold' : ''}">${p['Parti Son Teslim Tarihi']}</td><td class="p-4 text-right font-black">${formatPara(temizleTutar(p['Parti Tutarı']))}</td></tr>`;
+            });
+            document.getElementById('modal-content').innerHTML = h + `</tbody></table></div>`;
+        }
 
-    function closeModal() { document.getElementById('modal-container').style.setProperty('display', 'none', 'important'); }
-    function resetAll() { location.reload(); }
-    function prepareAndPrint() {
-        const scrollers = document.querySelectorAll('.fc-scroller');
-        scrollers.forEach(s => { s.style.height = 'auto'; s.style.overflow = 'visible'; });
-        window.print();
-    }
-</script>
+        function closeModal() { document.getElementById('modal-container').style.setProperty('display', 'none', 'important'); }
+        function resetAll() { location.reload(); }
+        function prepareAndPrint() {
+            const scrollers = document.querySelectorAll('.fc-scroller');
+            scrollers.forEach(s => { s.style.height = 'auto'; s.style.overflow = 'visible'; });
+            window.print();
+        }
+    </script>
 
 </body>
+
 </html>

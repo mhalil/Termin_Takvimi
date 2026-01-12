@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profesyonel İş Takip Sistemi</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338ca;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 0.75rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: var(--radius);
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: #eef2ff;
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 2rem;
+            max-width: calc(100vw - 280px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* View Sections */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Dashboard Cards */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-icon {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            background-color: #eef2ff;
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .card-value {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0px;
+        }
+
+        .card-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Filters */
+        .filters-container {
+            background-color: var(--surface);
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            padding: 0.75rem 2rem 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            background-color: white;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* Table */
+        .table-container {
+            background-color: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: #f8fafc;
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .data-table th:hover {
+            background-color: #e2e8f0;
+            color: var(--primary);
+        }
+
+        .data-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .data-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .sort-icon {
+            display: inline-block;
+            margin-left: 0.5rem;
+            width: 1em;
+            text-align: center;
+            opacity: 0.3;
+        }
+
+        .sort-active .sort-icon {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .status-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+        }
+
+        .status-completed {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background-color: #fff7ed;
+            color: #9a3412;
+        }
+
+        .amount-cell {
+            font-family: 'Monaco', monospace;
+            font-weight: 500;
+        }
+
+        /* Charts & Calendar */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+
+        .calendar-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border);
+        }
+
+        /* Color classes for cards */
+        .bg-blue {
+            background-color: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .bg-green {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .bg-orange {
+            background-color: #ffedd5;
+            color: #9a3412;
+        }
+
+        .bg-purple {
+            background-color: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .overdue {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 500px;
+            /* Increased width for new fields */
+            box-shadow: var(--shadow);
+            transform: translateY(20px);
+            transition: transform 0.3s;
+            max-height: 90vh;
+            /* Scrollable if needed */
+            overflow-y: auto;
+        }
+
+        .modal-overlay.open .modal-container {
+            transform: translateY(0);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        /* Job Cards (Dashboard) */
+        .job-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .job-card {
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .job-card-header {
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .job-card-company {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-card-ikn {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .job-card-body {
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .job-card-title {
+            font-weight: 500;
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .job-card-detail {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .job-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        /* Form Controls */
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+        }
+
+        /* Checkbox Styles */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border: 1px solid transparent;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .checkbox-group:hover {
+            background-color: #f8fafc;
+            border-color: #f1f5f9;
+        }
+
+        .custom-checkbox {
+            width: 1.2rem;
+            height: 1.2rem;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-label {
+            cursor: pointer;
+            font-size: 0.95rem;
+            user-select: none;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.625rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .header-btn {
+            padding: 0.75rem 1.5rem;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s;
+        }
+
+        .header-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-chart-line"></i>
+            Termin Takibi
+        </div>
+        <a class="nav-link active" onclick="switchView('dashboard')">
+            <i class="fa-solid fa-house"></i>
+            Gösterge Paneli
+        </a>
+        <a class="nav-link" onclick="switchView('all-records')">
+            <i class="fa-solid fa-folder-open"></i>
+            Tüm Kayıtlar
+        </a>
+        <a class="nav-link" onclick="switchView('summary')">
+            <i class="fa-solid fa-list-check"></i>
+            İhale Özetleri
+        </a>
+        <a href="edit.html" target="_blank" class="nav-link"
+            style="margin-top: auto; background-color: var(--primary); color: white; font-size: 0.75rem; white-space: nowrap;">
+            <i class="fa-solid fa-pen-to-square"></i>
+            VERİ DÜZENLE / EKLE ->
+        </a>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div>
+                <h1 class="page-title" id="pageTitle">Gösterge Paneli</h1>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;" id="pageSubtitle">Genel durum özeti ve
+                    metrikler</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button onclick="saveToLocalFile()" class="header-btn" style="background-color: var(--success);"
+                    title="Değişiklikleri veriler.js dosyasına kaydet">
+                    <i class="fa-solid fa-floppy-disk"></i> Değişiklikleri Dosyaya Kaydet
+                </button>
+                <button onclick="exportToExcel()" class="header-btn" style="background-color: var(--primary);">
+                    <i class="fa-solid fa-download"></i> Dışa Aktar
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW: DASHBOARD -->
+        <div id="view-dashboard" class="view-section active">
+            <!-- Metric Cards -->
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value" id="totalJobs">0</div>
+                            <div class="card-label">Toplam Parti Sayısı</div>
+                        </div>
+                        <div class="card-icon bg-blue"><i class="fa-solid fa-layer-group"></i></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value" id="completedJobs">0</div>
+                            <div class="card-label">Tamamlanan Parti Sayısı</div>
+                        </div>
+                        <div class="card-icon bg-green"><i class="fa-solid fa-check-circle"></i></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value" id="pendingJobs">0</div>
+                            <div class="card-label">Devam Eden / Bekleyen</div>
+                        </div>
+                        <div class="card-icon bg-orange"><i class="fa-solid fa-clock"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Job Cards Grid -->
+            <h2 style="font-size: 1.25rem; margin-bottom: 1rem; color: var(--text-main);">Mevcut İşler</h2>
+            <div id="recentJobCards" class="job-cards-grid">
+                <!-- Cards will be populated here -->
+            </div>
+        </div>
+
+        <!-- VIEW: ALL RECORDS -->
+        <div id="view-all-records" class="view-section">
+            <div class="filters-container" style="justify-content: flex-start; gap: 0.75rem;">
+                <div class="button-group" style="display: flex; gap: 0.5rem; flex: 0.8;">
+                    <button onclick="setAllRecordsFilter('all')" class="btn btn-primary" id="btn-all-records-all"
+                        style="flex: 1;">Tümü</button>
+                    <button onclick="setAllRecordsFilter('completed')" class="btn btn-secondary"
+                        id="btn-all-records-completed" style="flex: 1;">Tamamlananlar</button>
+                    <button onclick="setAllRecordsFilter('pending')" class="btn btn-secondary"
+                        id="btn-all-records-pending" style="flex: 1;">Devam Edenler</button>
+                </div>
+                <div class="search-box"
+                    style="display: flex; gap: 0.5rem; align-items: center; background: white; border: 1px solid var(--border); border-radius: 0.5rem; padding-right: 0.5rem; flex: 2;">
+                    <i class="fa-solid fa-magnifying-glass search-icon"
+                        style="position: static; margin-left: 1rem; color: var(--text-muted);"></i>
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="İhale adı, yüklenici firma veya İKN ara..."
+                        style="border: none; padding-left: 0.5rem; flex: 1; min-width: 0;">
+                    <button onclick="clearSearch()" class="btn btn-secondary"
+                        style="padding: 0.25rem 0.75rem; font-size: 0.8rem; background: #f1f5f9; color: var(--text-muted); border-radius: 0.4rem;"
+                        id="btnClearSearch">Temizle</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('İKN')" id="th-İKN">
+                                    İKN <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th onclick="sortTable('Yüklenici Firma')" id="th-Yüklenici Firma">
+                                    Yüklenici Firma <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th onclick="sortTable('İhale Adı')" id="th-İhale Adı">
+                                    İhale Adı <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th onclick="sortTable('Parti No')" id="th-Parti No">
+                                    Parti No <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th onclick="sortTable('Parti Son Teslim Tarihi')" id="th-Parti Son Teslim Tarihi">
+                                    Son Teslim Tarihi <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th onclick="sortTable('Parti Tutarı')" id="th-Parti Tutarı">
+                                    Tutar <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                                <th onclick="sortTable('Kabul İşlemi')" id="th-Kabul İşlemi">
+                                    Durum <i class="fa-solid fa-sort sort-icon"></i>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <i class="fa-regular fa-folder-open"
+                        style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p>Kayıt bulunamadı.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: SUMMARY -->
+        <div id="view-summary" class="view-section">
+            <div class="filters-container" style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                <button onclick="renderSummary('all')" class="btn btn-primary" id="btn-sum-all"
+                    style="flex: 1;">Tümü</button>
+                <button onclick="renderSummary('completed')" class="btn btn-secondary" id="btn-sum-completed"
+                    style="flex: 1;">Tamamlanan</button>
+                <button onclick="renderSummary('pending')" class="btn btn-secondary" id="btn-sum-pending"
+                    style="flex: 1;">Devam
+                    Eden</button>
+            </div>
+            <div id="summaryContainer" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+
+
+
+
+
+        <div style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.875rem; text-align: right;">
+            Son güncelleme: <span id="lastUpdate">Checking...</span>
+        </div>
+    </main>
+
+    <!-- Edit Modal (Expanded) -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-container">
+            <h3 class="modal-title">İş Takip Detayları</h3>
+
+            <div style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.85em; color: var(--text-muted); margin-bottom: 0.25rem;">İKN: <span
+                        id="modalIKN"></span></div>
+                <div style="font-weight: 600; font-size: 1.1em; color: var(--primary);" id="modalItemName"></div>
+                <div style="color: var(--text-muted); margin-top: 0.25rem;" id="modalPartiNo"></div>
+            </div>
+
+            <!-- New Checkbox Fields -->
+            <div class="form-group">
+                <label class="form-label" style="margin-bottom: 0.75rem;">Süreç Takibi</label>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cbAmbar" class="custom-checkbox">
+                    <label for="cbAmbar" class="checkbox-label">Ambar teslimi gerçekleşti</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cbTestBasladi" class="custom-checkbox">
+                    <label for="cbTestBasladi" class="checkbox-label">Testler başladı</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cbTestSonuc" class="custom-checkbox">
+                    <label for="cbTestSonuc" class="checkbox-label">Test sonuçları geldi</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="cbRapor" class="custom-checkbox">
+                    <label for="cbRapor" class="checkbox-label">Muayene ve Kabul Heyet Raporu imza aşamasında</label>
+                </div>
+            </div>
+
+            <!-- Status Select -->
+            <div class="form-group">
+                <label class="form-label">Genel Durum</label>
+                <select id="modalStatusSelect" class="form-control" style="font-weight: 500;">
+                    <option value="0">⏳ Bekliyor / Devam Ediyor</option>
+                    <option value="1">✅ Tamamlandı</option>
+                </select>
+            </div>
+
+            <!-- Description Textarea -->
+            <div class="form-group">
+                <label class="form-label">Açıklama / Notlar</label>
+                <textarea id="modalDescription" class="form-control" rows="3"
+                    placeholder="İş ile ilgili notlar..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeStatusModal()">Vazgeç</button>
+                <button class="btn btn-primary" onclick="saveStatus()">
+                    <i class="fa-solid fa-save"></i> Değişiklikleri Kaydet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Data -->
+    <script src="veriler.js"></script>
+
+    <script>
+        const currencyFormatter = new Intl.NumberFormat('tr-TR', {
+            style: 'currency',
+            currency: 'TRY',
+            minimumFractionDigits: 2
+        });
+
+        let currentData = [];
+
+
+        let sortState = {
+            key: 'Parti Son Teslim Tarihi',
+            direction: 'asc'
+        };
+
+        let currentEditingItem = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            initDashboard();
+            updateSortIcons();
+            filterData();
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('tr-TR');
+
+            document.getElementById('searchInput').addEventListener('input', filterData);
+        });
+
+        // --- Persistence Logic ---
+        function loadData() {
+            const savedData = localStorage.getItem('isTakipData');
+            if (savedData) {
+                try {
+                    currentData = JSON.parse(savedData);
+                } catch (e) {
+                    if (typeof ihaleVerileri !== 'undefined') currentData = ihaleVerileri;
+                }
+            } else {
+                if (typeof ihaleVerileri !== 'undefined') currentData = ihaleVerileri;
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('isTakipData', JSON.stringify(currentData));
+        }
+
+        async function saveToLocalFile() {
+            const fileContent = "const ihaleVerileri = " + JSON.stringify(currentData, null, 4) + ";";
+
+            // Try to use File System Access API
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: 'veriler.js',
+                        types: [{
+                            description: 'JavaScript File',
+                            accept: { 'text/javascript': ['.js'] },
+                        }],
+                    });
+
+                    const writable = await handle.createWritable();
+                    await writable.write(fileContent);
+                    await writable.close();
+
+                    alert('Dosya başarıyla kaydedildi! Sayfayı yenilediğinizde güncel veriler görünecektir.');
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.error('Kaydetme hatası:', err);
+                        fallbackDownload(fileContent);
+                    }
+                }
+            } else {
+                // Fallback for browsers not supporting the API
+                fallbackDownload(fileContent);
+            }
+        }
+
+        function fallbackDownload(content) {
+            const blob = new Blob([content], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'veriler.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- Navigation Logic ---
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(`view-${viewName}`).classList.add('active');
+
+            const links = document.querySelectorAll('.nav-link');
+            if (viewName === 'dashboard') links[0].classList.add('active');
+            if (viewName === 'all-records') links[1].classList.add('active');
+            if (viewName === 'summary') links[2].classList.add('active');
+
+            const titleEl = document.getElementById('pageTitle');
+            const subTitleEl = document.getElementById('pageSubtitle');
+
+            if (viewName === 'dashboard') {
+                titleEl.textContent = 'Gösterge Paneli';
+                subTitleEl.textContent = 'Genel durum özeti ve metrikler';
+            } else if (viewName === 'all-records') {
+                titleEl.textContent = 'Tüm Kayıtlar';
+                subTitleEl.textContent = 'Detaylı arama ve filtreleme';
+                titleEl.textContent = 'Tüm Kayıtlar';
+                subTitleEl.textContent = 'Detaylı arama ve filtreleme';
+                filterData();
+            } else if (viewName === 'summary') {
+                titleEl.textContent = 'İhale Özetleri';
+                subTitleEl.textContent = 'Sözleşme bazlı genel durum';
+                renderSummary();
+            } else if (viewName === 'statistics') {
+                titleEl.textContent = 'İstatistikler';
+                subTitleEl.textContent = 'Veri analizi ve grafikler';
+                setTimeout(() => renderCharts(), 100);
+            }
+        }
+
+        // --- Modal & Editing Logic ---
+        function openStatusModal(ikn, partiNo) {
+            const item = currentData.find(i => i['İKN'] === ikn && i['Parti No'] == partiNo);
+            if (!item) return;
+
+            currentEditingItem = item;
+
+            // Header Info
+            document.getElementById('modalIKN').textContent = item['İKN'];
+            document.getElementById('modalItemName').textContent = item['İhale Adı'];
+            document.getElementById('modalPartiNo').textContent = 'Parti ' + item['Parti No'] + ' - ' + item['Yüklenici Firma'];
+
+            // Populate Checkboxes (1 = true, other = false)
+            document.getElementById('cbAmbar').checked = item['Ambar teslimi gerçekleşti'] === 1;
+            document.getElementById('cbTestBasladi').checked = item['Testler başladı'] === 1;
+            document.getElementById('cbTestSonuc').checked = item['Test sonuçları geldi'] === 1;
+            document.getElementById('cbRapor').checked = item['Muayene Ve Kabul Heyet Raporu imza aşamasında'] === 1;
+
+            // Populate Status
+            document.getElementById('modalStatusSelect').value = item['Kabul İşlemi'];
+
+            // Populate Description (Handle NaN/null)
+            let desc = item['Açıklama'];
+            if (Number.isNaN(desc) || desc === null || desc === undefined) {
+                desc = "";
+            }
+            document.getElementById('modalDescription').value = desc;
+
+            document.getElementById('editModal').classList.add('open');
+        }
+
+        function closeStatusModal() {
+            document.getElementById('editModal').classList.remove('open');
+            currentEditingItem = null;
+        }
+
+        function saveStatus() {
+            if (!currentEditingItem) return;
+
+            // Save Checkboxes
+            currentEditingItem['Ambar teslimi gerçekleşti'] = document.getElementById('cbAmbar').checked ? 1 : 0;
+            currentEditingItem['Testler başladı'] = document.getElementById('cbTestBasladi').checked ? 1 : 0;
+            currentEditingItem['Test sonuçları geldi'] = document.getElementById('cbTestSonuc').checked ? 1 : 0;
+            currentEditingItem['Muayene Ve Kabul Heyet Raporu imza aşamasında'] = document.getElementById('cbRapor').checked ? 1 : 0;
+
+            // Save Status
+            currentEditingItem['Kabul İşlemi'] = parseInt(document.getElementById('modalStatusSelect').value);
+
+            // Save Description
+            currentEditingItem['Açıklama'] = document.getElementById('modalDescription').value;
+
+            // Persist & Update UI
+            saveData();
+            filterData();
+            initDashboard();
+
+
+
+            closeStatusModal();
+        }
+
+        // --- Table & Sorting ---
+        function sortTable(key) {
+            if (sortState.key === key) {
+                sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortState.key = key;
+                sortState.direction = 'asc';
+            }
+            updateSortIcons();
+            filterData();
+        }
+
+        function updateSortIcons() {
+            document.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sort-active');
+                const icon = th.querySelector('.sort-icon');
+                if (icon) icon.className = 'fa-solid fa-sort sort-icon';
+            });
+
+            const activeTh = document.getElementById(`th-${sortState.key}`);
+            if (activeTh) {
+                activeTh.classList.add('sort-active');
+                const icon = activeTh.querySelector('.sort-icon');
+                if (icon) {
+                    icon.className = sortState.direction === 'asc'
+                        ? 'fa-solid fa-arrow-up-short-wide sort-icon'
+                        : 'fa-solid fa-arrow-down-short-wide sort-icon';
+                }
+            }
+        }
+
+        function initDashboard() {
+            const totalJobs = currentData.length;
+            const completed = currentData.filter(i => i['Kabul İşlemi'] === 1).length;
+            const pending = currentData.filter(i => i['Kabul İşlemi'] === 0).length;
+
+
+            document.getElementById('totalJobs').textContent = totalJobs;
+            document.getElementById('completedJobs').textContent = completed;
+            document.getElementById('pendingJobs').textContent = pending;
+
+
+            const upcoming = currentData
+                .filter(i => i['Kabul İşlemi'] === 0)
+                .sort((a, b) => new Date(a['Parti Son Teslim Tarihi']) - new Date(b['Parti Son Teslim Tarihi']))
+                .slice(0, 8);
+
+            const recentContainer = document.getElementById('recentJobCards');
+            recentContainer.innerHTML = '';
+
+            upcoming.forEach(item => {
+                const date = new Date(item['Parti Son Teslim Tarihi']);
+                const isOverdue = date < new Date();
+
+                recentContainer.innerHTML += `
+                    <div class="job-card">
+                        <div class="job-card-header">
+                            <div class="job-card-company">${item['Yüklenici Firma']}</div>
+                            <div class="job-card-ikn">İKN: ${item['İKN']}</div>
+                        </div>
+                        <div class="job-card-body">
+                            <div class="job-card-title">${item['İhale Adı']}</div>
+                            <div class="job-card-detail">
+                                <i class="fa-solid fa-layer-group" style="width:16px;"></i>
+                                Parti ${item['Parti No']}
+                            </div>
+                            <div class="job-card-detail">
+                                <i class="fa-solid fa-tag" style="width:16px;"></i>
+                                ${item['Parti Tutarı']} ₺
+                            </div>
+                            
+                            <!-- Tracking Steps -->
+                            <div style="margin-top: 0.75rem; border-top: 1px solid #f1f5f9; padding-top: 0.5rem;">
+                                ${[
+                        { label: 'Ambar', val: item['Ambar teslimi gerçekleşti'] },
+                        { label: 'Test Başladı', val: item['Testler başladı'] },
+                        { label: 'Test Sonuç', val: item['Test sonuçları geldi'] },
+                        { label: 'Rapor', val: item['Muayene Ve Kabul Heyet Raporu imza aşamasında'] }
+                    ].map(step => `
+                                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">
+                                        <span>${step.label}</span>
+                                        <i class="fa-solid ${step.val ? 'fa-circle-check' : 'fa-circle'}" style="color: ${step.val ? 'var(--success)' : '#e2e8f0'};"></i>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <!-- Description Note -->
+                            ${item['Açıklama'] ? `
+                                <div style="margin-top: 0.75rem; padding: 0.5rem; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 0.375rem; font-size: 0.8rem; color: #92400e; font-style: italic;">
+                                    <i class="fa-regular fa-note-sticky" style="margin-right: 4px;"></i>
+                                    ${item['Açıklama']}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="job-card-footer">
+                            <div style="font-size: 0.85rem; font-weight: 500; color: ${isOverdue ? 'var(--danger)' : 'var(--text-muted)'};">
+                                <i class="fa-regular fa-calendar" style="margin-right: 4px;"></i>
+                                ${date.toLocaleDateString('tr-TR')}
+                            </div>
+                            <span 
+                                class="status-badge status-pending" 
+                                onclick="openStatusModal('${item['İKN']}', '${item['Parti No']}')"
+                                title="Durum değiştirmek için tıkla"
+                            >
+                                <i class="fa-solid fa-pen" style="font-size:0.7em; margin-right:4px;"></i>
+                                Bekliyor
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        let currentAllRecordsFilter = 'all';
+
+        function setAllRecordsFilter(status) {
+            currentAllRecordsFilter = status;
+
+            // Update active button state
+            document.querySelectorAll('#view-all-records .button-group button').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+
+            const activeBtnId = `btn-all-records-${status}`;
+            const activeBtn = document.getElementById(activeBtnId);
+            if (activeBtn) {
+                activeBtn.classList.remove('btn-secondary');
+                activeBtn.classList.add('btn-primary');
+            }
+
+            filterData();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            filterData();
+        }
+
+        function filterData() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusTerm = currentAllRecordsFilter;
+
+            let filtered = currentData.filter(item => {
+                const matchesSearch =
+                    item['İhale Adı'].toLowerCase().includes(searchTerm) ||
+                    item['Yüklenici Firma'].toLowerCase().includes(searchTerm) ||
+                    item['İKN'].includes(searchTerm);
+
+                const matchesStatus =
+                    statusTerm === 'all' ? true :
+                        statusTerm === 'completed' ? item['Kabul İşlemi'] === 1 :
+                            item['Kabul İşlemi'] === 0;
+
+                return matchesSearch && matchesStatus;
+            });
+
+            filtered.sort((a, b) => {
+                let valA = a[sortState.key];
+                let valB = b[sortState.key];
+
+                if (sortState.key === 'Parti Son Teslim Tarihi') {
+                    valA = new Date(valA);
+                    valB = new Date(valB);
+                } else if (sortState.key === 'Parti Tutarı') {
+                    valA = parseAmount(valA);
+                    valB = parseAmount(valB);
+                } else if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return sortState.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return sortState.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderTable(filtered);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
+
+            data.forEach(item => {
+                const isCompleted = item['Kabul İşlemi'] === 1;
+                const statusClass = isCompleted ? 'status-completed' : 'status-pending';
+                const statusText = isCompleted ? 'Tamamlandı' : 'Bekliyor';
+                const date = new Date(item['Parti Son Teslim Tarihi']);
+                const isOverdue = !isCompleted && date < new Date();
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: var(--primary);">#${item['İKN']}</td>
+                    <td style="font-weight: 500;">${item['Yüklenici Firma']}</td>
+                    <td style="max-width: 300px;">
+                        <div style="font-size: 0.9em; line-height: 1.4;">${item['İhale Adı']}</div>
+                    </td>
+                    <td><span style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-size: 0.85em;">Parti ${item['Parti No']}</span></td>
+                    <td class="${isOverdue ? 'overdue' : ''}">${date.toLocaleDateString('tr-TR')}</td>
+                    <td class="amount-cell">${item['Parti Tutarı']} ₺</td>
+                    <td>
+                        <span 
+                            class="status-badge ${statusClass}" 
+                            onclick="openStatusModal('${item['İKN']}', '${item['Parti No']}')"
+                            title="Durumu değiştirmek için tıkla"
+                        >
+                            <i class="fa-solid fa-pen" style="font-size:0.7em; margin-right:4px;"></i>
+                            ${statusText}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+
+
+
+
+        function parseAmount(amountStr) {
+            if (typeof amountStr === 'number') return amountStr;
+            return parseFloat(amountStr.replace(/\./g, '').replace(',', '.'));
+        }
+
+        function exportToExcel() {
+            alert("Excel'e aktarma özelliği yakında eklenecek!");
+        }
+
+        window.switchView = switchView;
+        window.sortTable = sortTable;
+        window.openStatusModal = openStatusModal;
+        window.closeStatusModal = closeStatusModal;
+        function renderSummary(filterType = 'all') {
+            const container = document.getElementById('summaryContainer');
+            container.innerHTML = '';
+
+            // Update active button state
+            document.querySelectorAll('.filters-container button').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+
+            const activeBtnId = filterType === 'all' ? 'btn-sum-all' :
+                filterType === 'completed' ? 'btn-sum-completed' : 'btn-sum-pending';
+            const activeBtn = document.getElementById(activeBtnId);
+            if (activeBtn) {
+                activeBtn.classList.remove('btn-secondary');
+                activeBtn.classList.add('btn-primary');
+            }
+
+            // Group by IKN + Company
+            const groups = {};
+            currentData.forEach(item => {
+                const key = `${item['İKN']} - ${item['Yüklenici Firma']}`;
+                if (!groups[key]) {
+                    groups[key] = {
+                        ikn: item['İKN'],
+                        company: item['Yüklenici Firma'],
+                        items: [],
+                        totalAmount: 0
+                    };
+                }
+                groups[key].items.push(item);
+                groups[key].totalAmount += parseAmount(item['Parti Tutarı']);
+            });
+
+            // Render Groups
+            Object.values(groups).forEach(group => {
+                const total = group.items.length;
+                const completed = group.items.filter(i => i['Kabul İşlemi'] === 1).length;
+                const pending = total - completed;
+                const progress = Math.round((completed / total) * 100);
+
+                // Filter Logic
+                if (filterType === 'completed' && progress < 100) return;
+                if (filterType === 'pending' && progress === 100) return;
+
+                const progressColor = progress === 100 ? 'var(--success)' : 'var(--warning)';
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div>
+                            <div style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem;">İKN: ${group.ikn}</div>
+                            <h3 style="font-size: 1.1rem; color: var(--primary); font-weight: 600;">${group.company}</h3>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 700; font-size: 1.1rem;">${currencyFormatter.format(group.totalAmount)}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Toplam Tutar</div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f1f5f9; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 1rem;">
+                        <div style="background: ${progressColor}; width: ${progress}%; height: 100%; transition: width 0.5s;"></div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                        <div style="background: #f8fafc; padding: 0.75rem; border-radius: 0.5rem;">
+                            <div style="font-weight: 700; font-size: 1.25rem; color: var(--text-main);">${total}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Toplam Parti</div>
+                        </div>
+                        <div style="background: #dcfce7; padding: 0.75rem; border-radius: 0.5rem;">
+                            <div style="font-weight: 700; font-size: 1.25rem; color: #166534;">${completed}</div>
+                            <div style="font-size: 0.75rem; color: #166534;">Tamamlanan</div>
+                        </div>
+                        <div style="background: #fff7ed; padding: 0.75rem; border-radius: 0.5rem;">
+                            <div style="font-weight: 700; font-size: 1.25rem; color: #9a3412;">${pending}</div>
+                            <div style="font-size: 0.75rem; color: #9a3412;">Bekleyen</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                        <button onclick="toggleDetails(this)" class="btn btn-secondary" style="width: 100%; font-size: 0.85rem;">
+                            <i class="fa-solid fa-chevron-down"></i> Detayları Göster
+                        </button>
+                        <div class="details-content" style="display: none; margin-top: 1rem;">
+                            <table class="data-table" style="font-size: 0.85rem;">
+                                <thead>
+                                    <tr>
+                                        <th style="padding: 0.5rem;">Parti</th>
+                                        <th style="padding: 0.5rem;">İş</th>
+                                        <th style="padding: 0.5rem;">Tarih</th>
+                                        <th style="padding: 0.5rem;">Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${group.items.map(item => `
+                                        <tr>
+                                            <td style="padding: 0.5rem;">${item['Parti No']}</td>
+                                            <td style="padding: 0.5rem;">${item['İhale Adı']}</td>
+                                            <td style="padding: 0.5rem;">${new Date(item['Parti Son Teslim Tarihi']).toLocaleDateString('tr-TR')}</td>
+                                            <td style="padding: 0.5rem;">
+                                                ${item['Kabul İşlemi'] === 1 ? '<span style="color: var(--success);">✔</span>' : '<span style="color: var(--warning);">⏳</span>'}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleDetails(btn) {
+            const content = btn.nextElementSibling;
+            const isHidden = content.style.display === 'none';
+            content.style.display = isHidden ? 'block' : 'none';
+            btn.innerHTML = isHidden
+                ? '<i class="fa-solid fa-chevron-up"></i> Detayları Gizle'
+                : '<i class="fa-solid fa-chevron-down"></i> Detayları Göster';
+        }
+
+        window.saveStatus = saveStatus;
+        window.downloadData = downloadData;
+    </script>
+</body>
+
+</html>
